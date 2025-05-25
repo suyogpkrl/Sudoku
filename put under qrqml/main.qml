@@ -364,8 +364,8 @@ ApplicationWindow {
 
                 Text {
                     id: scrollingCredits
-                    text: "Sanskar Dhital • Sujay Ratna Sthapit • Subhash Sinjali • Suyog Pokhrel • Surasa Silpakar • " +
-                          "Sanskar Dhital • Sujay Ratna Sthapit • Subhash Sinjali • Suyog Pokhrel • Surasa Silpakar • "
+                    text: "A-Little-Mouse • A-Little-Mouse • A-Little-Mouse • A-Little-Mouse • A-Little-Mouse • " +
+                          "A-Little-Mouse • A-Little-Mouse • A-Little-Mouse • A-Little-Mouse • A-Little-Mouse • "
                     color: "white"
                     font {
                         family: quicksandRegular.name
