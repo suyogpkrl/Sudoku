@@ -4,6 +4,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Controls.Fusion
 import QtQuick.Layouts 1.15
 
+
 ApplicationWindow {
     id: mainWindow
     title: qsTr("Sudoku") //Name of window
@@ -11,31 +12,31 @@ ApplicationWindow {
     minimumWidth: 800
     minimumHeight: minimumWidth*(9/16)
 
-    /*onWidthChanged: if (visibility === Window.Windowed) height = width * (9/16)
-      onHeightChanged: if (visibility === Window.Windowed) width = height * (16/9)*/
-    //to maintain aspect ratio
-
     // Uses fusion theme
-    Component.onCompleted: {
-        ApplicationWindow.style = Fusion
-    }
+    Component.onCompleted: { //component.onCompleted means the component which is ApplicationWindow with id: mainWindow has fully loaded
+        ApplicationWindow.style = Fusion //a inbuilt QTstyle
+        //console.log(mainWindow.height) used to get total height of729
+    }//does the same thing as style=fusion
+
 
     // Fade In Component for mainWindow
     Component {
         id: mfadeInComponent
-        ParallelAnimation {
+        ParallelAnimation { //enables animation to be run in parallel
             id: parallelAnim2
             onStarted: {
-                leftHalf.visible = true
+                leftHalf.visible = true //to show or not to show the component
                 rightHalf.visible = true
+                leftHalf.enabled = false //the component will be visible but uninteractable
+                rightHalf.enabled = false
             }
 
-            NumberAnimation {
+            NumberAnimation { //animation that changes numerical type values
                 target: leftHalf
-                property: "opacity"
+                property: "opacity" // the number animation will change the opacity of component with id: leftHalf
                 from: 0
                 to: 1
-                duration: 700
+                duration: 700 //time
             }
             NumberAnimation {
                 target: rightHalf
@@ -45,16 +46,23 @@ ApplicationWindow {
                 duration: 700
             }
             onStopped: {
-                parallelAnim2.destroy()
+                leftHalf.enabled = true
+                rightHalf.enabled = true
+                parallelAnim2.destroy()// Once completed gets destroyed // only to free memory , doesnt change its functions
             }
         }
     }
 
-    // Fade Out Component
+    // Fade Out Component for mainWindow
     Component {
         id: mfadeOutComponent
         ParallelAnimation {
             id: parallelAnim1
+            onStarted: {
+                leftHalf.enabled = false
+                rightHalf.enabled = false
+            }
+
             NumberAnimation {
                 target: leftHalf
                 property: "opacity"
@@ -67,7 +75,7 @@ ApplicationWindow {
                 property: "opacity"
                 from: 1
                 to: 0
-                duration: 350
+                duration: 300
             }
             onStopped: {
                 leftHalf.visible = false
@@ -84,6 +92,7 @@ ApplicationWindow {
             id: parallelAnim3
             onStarted: {
                 playchoose.visible= true
+                playchoose.enabled = false
             }
 
             NumberAnimation {
@@ -94,26 +103,105 @@ ApplicationWindow {
                 duration: 700
             }
             onStopped: {
+                playchoose.enabled = true
                 parallelAnim3.destroy()
             }
         }
     }
 
-    // Fade In Component for playchoose
+    // Fade Out Component for playchoose
     Component {
         id: pcfadeOutComponent
         ParallelAnimation {
             id: parallelAnim4
+            onStarted: {
+                playchoose.enabled = false
+            }
+
             NumberAnimation {
                 target: playchoose
                 property: "opacity"
                 from: 1
                 to: 0
-                duration: 350
+                duration: 300
             }
             onStopped: {
-                playchoose.opacity = false
+                playchoose.visible = false
                 parallelAnim4.destroy()
+            }
+        }
+    }
+
+    //fade In Component for singleplayerScreen
+    Component {
+        id: spsfadeInComponent
+        ParallelAnimation {
+            id: parallelAnim5
+            onStarted: {
+                singleplayerScreen.visible= true
+                singleplayerScreen.enabled = false
+            }
+
+            NumberAnimation {
+                target: singleplayerScreen
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 700
+            }
+
+            onStopped: {
+                singleplayerScreen.enabled = true
+                parallelAnim5.destroy()
+            }
+        }
+    }
+
+    //fade Out Component for singleplayerScreen
+    Component {
+        id: spsfadeOutComponent
+        ParallelAnimation {
+            id: parallelAnim6
+
+            onStarted: {
+                singleplayerScreen.enabled = false
+            }
+
+            NumberAnimation {
+                target: singleplayerScreen
+                property: "opacity"
+                from: 1
+                to: 0
+                duration: 300
+            }
+
+            onStopped: {
+                singleplayerScreen.visible= false
+                parallelAnim6.destroy()
+            }
+        }
+    }
+
+    Component {
+        id: sfadeInComponent
+        ParallelAnimation{
+            id: parallelAnim7
+            onStarted:{
+               settingScreen.visible = false
+               settingScreen.enabled = false
+            }
+
+            NumberAnimation {
+                target: settingScreen
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 700
+            }
+
+            onStopped: {
+                settingScreen.enabled = true
+                parallelAnim7.destroy()
             }
         }
     }
@@ -125,6 +213,7 @@ ApplicationWindow {
 
     Item{
         id: aspectratio
+        //to maintain the 16:9 aspect ratio on windowed
         anchors.centerIn: parent
         width: if(aspectratio.height>mainWindow.height)
                {
@@ -141,19 +230,16 @@ ApplicationWindow {
             id: background
             anchors.fill: parent
             source: "qrc:/backgroundmain.jpg"
-            fillMode: Image.PreserveAspectCrop
-            opacity: 0.85
+            fillMode: Image.PreserveAspectCrop //preserves apsect ratio , fills the window and crops the unseen part
+            opacity: 0.8
         }
-
-        // Declare the playScreen as a property
-            property var playScreen: null
 
         //The main menu is divided into two halfs , one for the options and another for the credit and tictactoe
 
         // Left Half - Menu Options
         Item {
+            id:leftHalf
             visible :true
-            id: leftHalf
             width: parent.width / 2
             height: parent.height
 
@@ -161,15 +247,15 @@ ApplicationWindow {
             // Game Logo
             Image {
                 id: logo
-                source: "qrc:/logo.png"
+                source: "qrc:/logo.png" //game logo
                 anchors {
-                    horizontalCenter: parent.horizontalCenter
-                    top: parent.top
-                    topMargin: parent.height * 0.1
+                    horizontalCenter: parent.horizontalCenter //centers the element to the horizontal of the leftHalf Item
+                    top: parent.top // sticks to top
+                    topMargin: parent.height * 0.1 // margin from top , requires top for it to work
                 }
                 width: 100
                 height: width
-                fillMode: Image.PreserveAspectFit  //to fit the image in the given ratio maintaining its original aspect ratio
+                fillMode: Image.PreserveAspectCrop  //to fit the image in the given ratio maintaining its original aspect ratio
             }
 
             // Menu Options (Text Only)
@@ -189,9 +275,9 @@ ApplicationWindow {
                     }
                     anchors.horizontalCenter: parent.horizontalCenter //centers the text horizonatlly to the parent(column of id menucolumn) in this case
 
-                    SequentialAnimation on scale {//sequential allows multiple animation at same time
+                    SequentialAnimation on scale {//sequential allows animation to run one after another
                         id: playAnim
-                        running: false
+                        running: false //if the animation has't started then it will wait until called with id.start() for example playAnim.start()
                         loops: 1
                         //animation which effects numerical value
                         NumberAnimation { to: 1.1; duration: 100 } //grows the text to 1.1 times its original size in 1 second
@@ -204,13 +290,13 @@ ApplicationWindow {
                         cursorShape: Qt.PointingHandCursor //changes cursor to hand clicking when mouse is over the text region
                         onEntered: { //when the text region is entered (hovered)
                             playOption.font.bold = true
-                            playAnim.start()
+                            playAnim.start()//changes the running : false to true for id: playAnim
                         }
                         onExited: playOption.font.bold = false //when the text region is exited (cursor moved away)
                         onClicked:{
-                            var mfadeOut = mfadeOutComponent.createObject(mainWindow)
+                            var mfadeOut = mfadeOutComponent.createObject(mainWindow)//component defined above
                             var pcfadeIn = pcfadeInComponent.createObject(playchoose)
-                            mfadeOut.start()
+                            mfadeOut.start() //starts the component defined on mfadeOut variable
                             pcfadeIn.start()
                              }
 
@@ -251,8 +337,8 @@ ApplicationWindow {
 
                 //same as playOption
                 Text {
-                    id: historyOption
-                    text: "HISTORY"
+                    id: settingOption
+                    text: "SETTING"
                     color: "white"
                     font {
                         family: quicksandMedium.name
@@ -261,7 +347,7 @@ ApplicationWindow {
                     anchors.horizontalCenter: parent.horizontalCenter
 
                     SequentialAnimation on scale {
-                        id: historyAnim
+                        id: settingAnim
                         running: false
                         loops: 1
                         NumberAnimation { to: 1.1; duration: 100 }
@@ -273,11 +359,15 @@ ApplicationWindow {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onEntered: {
-                            historyOption.font.bold = true
-                            historyAnim.start()
+                            settingOption.font.bold = true
+                            settingAnim.start()
                         }
-                        onExited: historyOption.font.bold = false
-                        onClicked: console.log("History clicked")
+                        onExited: settingOption.font.bold = false
+                        onClicked:{
+                            rightHalf.visible = false
+                            leftHalf.visible = false
+                            settingScreen.visible =true
+                        }
                     }
                 }
 
@@ -321,8 +411,21 @@ ApplicationWindow {
             id:rightHalf
             width: parent.width / 2
             height: parent.height
+            anchors.topMargin:100
             anchors.right: parent.right
-            //enter here tictactoe
+            //enter here tictactoe if you want ticTacToe
+
+            Loader{ //dynamically loads and unloads the source , saves memory i guess
+                id: activitylog
+                width: parent.width-200 //loader will be the parent for the activitylog.qml so the height and width must be same
+                height: 450
+                source:"qrc:/customcomponents/activityLog.qml" //the loader loads this
+                anchors{
+                    horizontalCenter: parent.horizontalCenter
+                    top: parent.top
+                    topMargin: 100
+                }
+            }
 
             // Credits
             Rectangle {
@@ -336,7 +439,7 @@ ApplicationWindow {
                     bottom: parent.bottom
                     bottomMargin: 50
                 }
-                clip: true
+                clip: true //doesn't show text when text is out of the bounds of the rectangle
 
                 Text {
                     id: staticCreditsText
@@ -368,8 +471,8 @@ ApplicationWindow {
 
                     Text {
                         id: scrollingCredits
-                        text: "Sanskar Dhital • Sujay Ratna Sthapit • Subhash Sinjali • Suyog Pokhrel • Surasa Silpakar • " +
-                              "Sanskar Dhital • Sujay Ratna Sthapit • Subhash Sinjali • Suyog Pokhrel • Surasa Silpakar • "
+                        text: "Be a little Mouse • Be a little Mouse • Be a little Mouse • Be a little Mouse • Be a little Mouse • " +
+                              "Be a little Mouse • Be a little Mouse • Be a little Mouse • Be a little Mouse • Be a little Mouse • "
                         color: "white"
                         font {
                             family: quicksandRegular.name
@@ -422,6 +525,7 @@ ApplicationWindow {
             border.color: "#555"
             anchors.centerIn: parent
             visible: false
+            z:100 //usually 0 , even though all components have z=0 by default the component which is defined later is shown above
 
             Text {
                 id: dialogTitle
@@ -526,6 +630,7 @@ ApplicationWindow {
             anchors.fill: parent
             opacity: 0
             visible: false
+            enabled: false
 
             Row{
                 id:playchooserow
@@ -539,38 +644,47 @@ ApplicationWindow {
                     height: playchoose.height/1.5 //can use parent instead of playchoose row
                     width: playchoose.width/3.5
                     radius: 12
+
+                    MouseArea{
+                        id:singleplayerbutton
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+                        onClicked: {
+                            var pcfadeOut = pcfadeOutComponent.createObject(playchoose)
+                            var spsfadeIn = spsfadeInComponent.createObject(singleplayerScreen)
+                            pcfadeOut.start()
+                            spsfadeIn.start()
+                        }
+                    }
                 }
                 Rectangle{
                     height: playchoose.height/1.5
                     width: playchoose.width/3.5
                     radius: 12
+                    MouseArea{
+                        id:multiplayerbutton
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+                        onClicked: {
+                            var pcfadeOut = pcfadeOutComponent.createObject(playchoose)
+                            pcfadeOut.start()
+                        }
+                    }
                 }
             }
 
-            Rectangle {
-                id: playchooseback
+            Loader {
+                id:playchooseBackLoader
                 width: 100
                 height: 40
                 anchors{
                     bottom: parent.bottom
-                    margins : 40
                     right: parent.right
+                    margins: 40
                 }
-                color: yesMouseArea.containsPress ? "#60000000" :  //pressing
-                      (yesMouseArea.containsMouse ? "#50000000" : "#40000000") //hovering
-                radius: 5
-                border.width: 2
-                border.color: "white"
-
-                Text {
-                    text: "Back"
-                    color: "white"
-                    anchors.centerIn: parent
-                    font {
-                        family: quicksandMedium.name
-                        pixelSize: 15
-                    }
-                }
+                source: "qrc:/customcomponents/backButton.qml"
 
                 MouseArea{
                     id: playchoosebackmousearea
@@ -583,8 +697,63 @@ ApplicationWindow {
                         pcfadeOut.start()
                         mfadeIn.start()
                     }
+                    z:1
                 }
             }
         }
     }
+
+
+    //The actual Game
+    Item{
+        id: singleplayerScreen
+        anchors.fill: parent
+        opacity: 0
+        visible: false
+        enabled: false
+
+        Rectangle{
+            id:playertools
+            anchors{
+                right: parent.right
+                top: parent.top
+                bottom: parent.bottom
+                margins: 40
+                bottomMargin: 100
+            }
+            border.color: "white"
+            border.width: 2
+            width: 340
+            radius: 5
+            color: "#30000000"
+        }
+        Loader {
+            id:singleplayerScreenLoader
+            width: 100
+            height: 40
+            anchors{
+                bottom: parent.bottom
+                right: parent.right
+                margins: 40
+            }
+            source: "qrc:/customcomponents/backButton.qml"
+
+            MouseArea{
+
+                id: singleplayerScreenbackmousearea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked:{
+                    var pcfadeIn = pcfadeInComponent.createObject(playchoose)
+                    var spsfadeOut = spsfadeOutComponent.createObject(singleplayerScreen)
+                    pcfadeIn.start()
+                    spsfadeOut.start()
+                }
+                z:1
+            }
+        }
+    }
+
+    
 }
