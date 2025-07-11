@@ -1,5 +1,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include "SudokuGenerator.h"
+#include "Solver.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,6 +12,9 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+    qmlRegisterType<SudokuGenerator>("com.sudoku.generator", 1, 0, "SudokuGenerator");
+    qmlRegisterType<Solver>("com.sudoku.solver", 1, 0, "Solver");
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
         &engine,
