@@ -20,6 +20,8 @@ private:
     using Grid = std::vector<std::vector<int>>;
     bool solveSudoku(Grid &grid);
     bool isValid(const Grid &grid, int row, int col, int num);
+    int m_maxIterations;
+    int m_currentIterations;
 };
 
 #endif // SOLVER_H

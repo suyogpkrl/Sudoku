@@ -15,11 +15,14 @@ public:
     Q_INVOKABLE QVariantList generateSudoku(int difficulty);
 
     Q_INVOKABLE bool checkNumber(int row, int col, int num);
+    Q_INVOKABLE void checkPuzzle(QVariantList currentGrid);
     Q_INVOKABLE void solvePuzzle(QVariantList grid);
+    Q_INVOKABLE void savePuzzle(QVariantList grid, int time, int difficulty);
 
 signals:
     void sudokuGenerated(QVariantList puzzle);
     void sudokuSolved(bool success, QVariantList solution);
+    void puzzleChecked(int status);
 
 private:
     using Grid = std::vector<std::vector<int>>;

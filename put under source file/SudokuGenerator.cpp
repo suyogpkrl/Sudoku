@@ -3,6 +3,10 @@
 #include <QRandomGenerator>
 #include <algorithm>
 #include <random>
+#include <QFile>
+#include <QTextStream>
+#include <QStandardPaths>
+#include <QDir>
 
 SudokuGenerator::SudokuGenerator(QObject *parent) : QObject(parent)
 {
@@ -15,20 +19,27 @@ QVariantList SudokuGenerator::generateSudoku(int difficulty)
     solvedGrid = grid; // Store the complete solution
 
     int cellsToRemove = 0;
-    if (difficulty == 1) { // Easy
-        cellsToRemove = 40;
-    } else if (difficulty == 2) { // Medium
-        cellsToRemove = 50;
-    } else { // Hard
+    if (difficulty == 1)
+    { // Easy
+        cellsToRemove = 1;
+    }
+    else if (difficulty == 2)
+    { // Medium
+        cellsToRemove = 1;
+    }
+    else
+    { // Hard
         cellsToRemove = 60;
     }
 
     removeCells(grid, cellsToRemove);
 
     QVariantList qmlGrid;
-    for (const auto &row : grid) {
+    for (const auto &row : grid)
+    {
         QVariantList qmlRow;
-        for (int cell : row) {
+        for (int cell : row)
+        {
             qmlRow.append(cell);
         }
         qmlGrid.append(QVariant(qmlRow));
@@ -50,18 +61,24 @@ void SudokuGenerator::fillGrid(Grid &grid)
 
 bool SudokuGenerator::solveSudoku(Grid &grid)
 {
-    for (int row = 0; row < 9; ++row) {
-        for (int col = 0; col < 9; ++col) {
-            if (grid[row][col] == 0) {
+    for (int row = 0; row < 9; ++row)
+    {
+        for (int col = 0; col < 9; ++col)
+        {
+            if (grid[row][col] == 0)
+            {
                 std::vector<int> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
                 std::random_device rd;
                 std::mt19937 g(rd());
                 std::shuffle(numbers.begin(), numbers.end(), g);
 
-                for (int num : numbers) {
-                    if (isValid(grid, row, col, num)) {
+                for (int num : numbers)
+                {
+                    if (isValid(grid, row, col, num))
+                    {
                         grid[row][col] = num;
-                        if (solveSudoku(grid)) {
+                        if (solveSudoku(grid))
+                        {
                             return true;
                         }
                         grid[row][col] = 0; // Backtrack
@@ -77,15 +94,19 @@ bool SudokuGenerator::solveSudoku(Grid &grid)
 bool SudokuGenerator::isValid(const Grid &grid, int row, int col, int num)
 {
     // Check row
-    for (int x = 0; x < 9; ++x) {
-        if (grid[row][x] == num) {
+    for (int x = 0; x < 9; ++x)
+    {
+        if (grid[row][x] == num)
+        {
             return false;
         }
     }
 
     // Check column
-    for (int x = 0; x < 9; ++x) {
-        if (grid[x][col] == num) {
+    for (int x = 0; x < 9; ++x)
+    {
+        if (grid[x][col] == num)
+        {
             return false;
         }
     }
@@ -93,9 +114,12 @@ bool SudokuGenerator::isValid(const Grid &grid, int row, int col, int num)
     // Check 3x3 box
     int startRow = row - row % 3;
     int startCol = col - col % 3;
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            if (grid[i + startRow][j + startCol] == num) {
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            if (grid[i + startRow][j + startCol] == num)
+            {
                 return false;
             }
         }
@@ -106,11 +130,13 @@ bool SudokuGenerator::isValid(const Grid &grid, int row, int col, int num)
 void SudokuGenerator::removeCells(Grid &grid, int count)
 {
     int removed = 0;
-    while (removed < count) {
+    while (removed < count)
+    {
         int row = QRandomGenerator::global()->bounded(9);
         int col = QRandomGenerator::global()->bounded(9);
 
-        if (grid[row][col] != 0) {
+        if (grid[row][col] != 0)
+        {
             grid[row][col] = 0;
             removed++;
         }
@@ -119,18 +145,75 @@ void SudokuGenerator::removeCells(Grid &grid, int count)
 
 bool SudokuGenerator::checkNumber(int row, int col, int num)
 {
-    if (row < 0 || row >= 9 || col < 0 || col >= 9) {
+    if (row < 0 || row >= 9 || col < 0 || col >= 9)
+    {
         return false;
     }
     return solvedGrid[row][col] == num;
 }
 
+void SudokuGenerator::checkPuzzle(QVariantList qmlGrid)
+{
+    bool isFull = true;
+    for (int i = 0; i < 9; ++i)
+    {
+        QVariantList row = qmlGrid[i].toList();
+        for (int j = 0; j < 9; ++j)
+        {
+            if (row[j].toInt() == 0)
+            {
+                isFull = false;
+                break;
+            }
+        }
+        if (!isFull)
+        {
+            break;
+        }
+    }
+
+    if (!isFull)
+    {
+        emit puzzleChecked(-1); // Incomplete
+        return;
+    }
+
+    bool isCorrect = true;
+    for (int i = 0; i < 9; ++i)
+    {
+        QVariantList row = qmlGrid[i].toList();
+        for (int j = 0; j < 9; ++j)
+        {
+            if (row[j].toInt() != solvedGrid[i][j])
+            {
+                isCorrect = false;
+                break;
+            }
+        }
+        if (!isCorrect)
+        {
+            break;
+        }
+    }
+
+    if (isCorrect)
+    {
+        emit puzzleChecked(1); // Correct
+    }
+    else
+    {
+        emit puzzleChecked(0); // Incorrect
+    }
+}
+
 void SudokuGenerator::solvePuzzle(QVariantList qmlGrid)
 {
     Grid grid(9, std::vector<int>(9));
-    for (int i = 0; i < 9; ++i) {
+    for (int i = 0; i < 9; ++i)
+    {
         QVariantList row = qmlGrid[i].toList();
-        for (int j = 0; j < 9; ++j) {
+        for (int j = 0; j < 9; ++j)
+        {
             grid[i][j] = row[j].toInt();
         }
     }
@@ -139,14 +222,46 @@ void SudokuGenerator::solvePuzzle(QVariantList qmlGrid)
     bool solvable = solveSudoku(solved);
 
     QVariantList qmlSolution;
-    if (solvable) {
-        for (const auto &row : solved) {
+    if (solvable)
+    {
+        for (const auto &row : solved)
+        {
             QVariantList qmlRow;
-            for (int cell : row) {
+            for (int cell : row)
+            {
                 qmlRow.append(cell);
             }
             qmlSolution.append(QVariant(qmlRow));
         }
     }
-    emit sudokuSolved(solvable, qmlSolution);
+}
+void SudokuGenerator::savePuzzle(QVariantList qmlGrid, int time, int difficulty)
+{
+    QString path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    QDir dir(path);
+    if (!dir.exists("SudokuPuzzles"))
+    {
+        dir.mkdir("SudokuPuzzles");
+    }
+    QString filePath = path + "/SudokuPuzzles/solved_puzzles_history.txt";
+    QFile file(filePath);
+    if (file.open(QIODevice::Append | QIODevice::Text))
+    {
+        QTextStream out(&file);
+        out << "--- Puzzle Entry ---\n";
+        out << "Date: " << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") << "\n";
+        out << "Completion Time (seconds): " << time << "\n";
+        out << "Difficulty: " << difficulty << "\n";
+        out << "Puzzle:\n";
+        for (int i = 0; i < 9; ++i)
+        {
+            QVariantList row = qmlGrid[i].toList();
+            for (int j = 0; j < 9; ++j)
+            {
+                out << row[j].toInt() << " ";
+            }
+            out << "\n";
+        }
+        file.close();
+    }
 }
