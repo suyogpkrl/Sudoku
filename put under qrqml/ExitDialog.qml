@@ -5,21 +5,22 @@ Rectangle {
     id: exitDialog
     width: 400
     height: 200
-    color: "#333"
-    radius: 12
-    border.color: "#555"
-    anchors.centerIn: parent
+    color: "transparent"
+    radius: 10
+    border.color: mainWindow.borderMainColour
+    border.width: 2
+    anchors.centerIn: overlayRectangle
     visible: false
-    z:100
+    z:99
 
     property alias dialogTitle: dialogTitle.text
 
     Text {
         id: dialogTitle
         text: "Exit Sudoku?"
-        color: "white"
+        color: mainWindow.textMainColour
         font {
-            family: quicksandBold.name
+            //family: quicksandBold.name
             pixelSize: 20
         }
         anchors {
@@ -31,10 +32,10 @@ Rectangle {
 
     Text {
         text: "Are you sure you want to exit?"
-        color: "white"
+        color: mainWindow.textMainColour
         font {
-            family: quicksandRegular.name
-            pixelSize: 16
+            //family: quicksandRegular.name
+            pixelSize: 18
         }
         anchors.centerIn: parent
     }
@@ -51,54 +52,66 @@ Rectangle {
             id: yesButton
             width: 80
             height: 30
-            color: yesMouseArea.containsPress ? "#60000000" : (yesMouseArea.containsMouse ? "#50000000" : "transparent")
-            radius: 4
+            color: "transparent"
+            radius: 5
             border.width: 1
-            border.color: "#555"
+            border.color: mainWindow.borderMainColour
 
             Text {
                 text: "Yes"
-                color: "white"
+                color: mainWindow.textMainColour
                 anchors.centerIn: parent
                 font {
-                    family: quicksandMedium.name
-                    pixelSize: 14
+                    //family: quicksandMedium.name
+                    pixelSize: 15
                 }
             }
 
             MouseArea {
-                id: yesMouseArea
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: Qt.quit()
-            }
+                            id: yesMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.BlankCursor
+                            onPressed: yesButton.color = "#60228201"
+                            onReleased: yesButton.color= "transparent"
+                            onClicked: {
+                                mainWindow.powerOn = false;
+                                Qt.quit();
+                            }
+                        }
         }
 
         Rectangle {
             id: noButton
             width: 80
             height: 30
-            color: noMouseArea.containsPress ? "#60000000" : (noMouseArea.containsMouse ? "#50000000" : "transparent")
-            radius: 4
+            color: "transparent"
+            radius: 5
             border.width: 1
-            border.color: "#555"
+            border.color: mainWindow.borderMainColour
 
             Text {
                 text: "No"
-                color: "white"
+                color: mainWindow.textMainColour
                 anchors.centerIn: parent
                 font {
-                    family: quicksandMedium.name
-                    pixelSize: 14
+                    //family: quicksandMedium.name
+                    pixelSize: 15
                 }
             }
 
             MouseArea {
-                id: noMouseArea
-                anchors.fill: parent
-                hoverEnabled: true
-                onClicked: exitDialog.visible = false
-            }
+                            id: noMouseArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.BlankCursor
+                            onPressed: noButton.color = "#60228201"
+                            onReleased: noButton.color = "transparent"
+                            onClicked: {
+                                exitDialog.visible = false;
+                                menuColumn.visible = true;
+                            }
+                        }
         }
     }
 
