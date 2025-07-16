@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include "SudokuGenerator.h"
 #include "Solver.h"
+#include "HistoryRead.h"
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +15,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     qmlRegisterType<SudokuGenerator>("com.sudoku.generator", 1, 0, "SudokuGenerator");
     qmlRegisterType<Solver>("com.sudoku.solver", 1, 0, "Solver");
+    qmlRegisterType<HistoryRead>("com.sudoku.history", 1, 0, "HistoryRead");
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(
