@@ -1,5 +1,13 @@
+/**
+ * ExitDialog.qml
+ * 
+ * A dialog component that confirms if the user wants to exit the application.
+ * Provides Yes/No options and handles the exit process.
+ */
+
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts 1.15
 
 Rectangle {
     id: exitDialog
@@ -11,18 +19,27 @@ Rectangle {
     border.width: 2
     anchors.centerIn: overlayRectangle
     visible: false
-    z:99
+    z: 99
 
+    // Allow customization of the dialog title
     property alias dialogTitle: dialogTitle.text
 
+    // Background image (optimized to use the existing monitor image)
+    Image {
+        id: popupBackground
+        source: "qrc:/ImgResources/Screen/Monitor.png"
+        height: monitorImage.height
+        fillMode: Image.PreserveAspectFit
+        anchors.centerIn: ApplicationWindow
+        // This image could be cached or optimized further
+    }
+
+    // Dialog title
     Text {
         id: dialogTitle
         text: "Exit Sudoku?"
         color: mainWindow.textMainColour
-        font {
-            //family: quicksandBold.name
-            pixelSize: 20
-        }
+        font.pixelSize: 20
         anchors {
             top: parent.top
             horizontalCenter: parent.horizontalCenter
@@ -30,16 +47,15 @@ Rectangle {
         }
     }
 
+    // Dialog message
     Text {
         text: "Are you sure you want to exit?"
         color: mainWindow.textMainColour
-        font {
-            //family: quicksandRegular.name
-            pixelSize: 18
-        }
+        font.pixelSize: 18
         anchors.centerIn: parent
     }
 
+    // Button row
     Row {
         anchors {
             bottom: parent.bottom
@@ -48,6 +64,7 @@ Rectangle {
         }
         spacing: 20
 
+        // Yes button
         Rectangle {
             id: yesButton
             width: 80
@@ -61,26 +78,24 @@ Rectangle {
                 text: "Yes"
                 color: mainWindow.textMainColour
                 anchors.centerIn: parent
-                font {
-                    //family: quicksandMedium.name
-                    pixelSize: 15
-                }
+                font.pixelSize: 15
             }
 
             MouseArea {
-                            id: yesMouseArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.BlankCursor
-                            onPressed: yesButton.color = "#60228201"
-                            onReleased: yesButton.color= "transparent"
-                            onClicked: {
-                                mainWindow.powerOn = false;
-                                Qt.quit();
-                            }
-                        }
+                id: yesMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.BlankCursor
+                onPressed: yesButton.color = "#60228201"
+                onReleased: yesButton.color = "transparent"
+                onClicked: {
+                    mainWindow.powerOn = false;
+                    Qt.quit();
+                }
+            }
         }
 
+        // No button
         Rectangle {
             id: noButton
             width: 80
@@ -94,27 +109,27 @@ Rectangle {
                 text: "No"
                 color: mainWindow.textMainColour
                 anchors.centerIn: parent
-                font {
-                    //family: quicksandMedium.name
-                    pixelSize: 15
-                }
+                font.pixelSize: 15
             }
 
             MouseArea {
-                            id: noMouseArea
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.BlankCursor
-                            onPressed: noButton.color = "#60228201"
-                            onReleased: noButton.color = "transparent"
-                            onClicked: {
-                                exitDialog.visible = false;
-                                menuColumn.visible = true;
-                            }
-                        }
+                id: noMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.BlankCursor
+                onPressed: noButton.color = "#60228201"
+                onReleased: noButton.color = "transparent"
+                onClicked: {
+                    exitDialog.visible = false;
+                    menuColumn.visible = true;
+                }
+            }
         }
     }
 
+    /**
+     * Opens the exit dialog
+     */
     function open() {
         exitDialog.visible = true
     }

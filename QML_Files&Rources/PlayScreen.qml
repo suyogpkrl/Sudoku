@@ -1,3 +1,10 @@
+/**
+ * PlayScreen.qml
+ * 
+ * The main game screen where users play Sudoku puzzles.
+ * Handles puzzle generation, user input, validation, and game state.
+ */
+
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
@@ -9,28 +16,35 @@ Item {
     width: parent.width
     height: parent.height
 
-    property int selectedNumber: 0 // Stores the currently selected number for input
+    // Game state properties
+    property int selectedNumber: 0 // Currently selected number for input
     property bool gameStarted: false
     property int difficulty: 1 // 1: Easy, 2: Medium, 3: Hard
-    property var sudokuPuzzle: []
+    property var sudokuPuzzle: [] // Stores the current puzzle
     property bool isPlayScreenLoaded: false
-    property bool startButtonShowing : true
+    property bool startButtonShowing: true
 
+    // Initialize the screen
     Component.onCompleted: {
+        // Position the timer icon
         timerIcon.y = mainWindow.height - timerIcon.height * 0.95
         isPlayScreenLoaded = true
         console.log("Play Screen Loaded")
     }
 
-    Keys.onPressed: {
+    // Handle keyboard input
+    Keys.onPressed: function(event) {
         if (gameStarted && event.key >= Qt.Key_1 && event.key <= Qt.Key_9) {
             selectedNumber = event.key - Qt.Key_0;
             event.accepted = true;
         }
     }
 
+    // Sudoku generator component
     SudokuGenerator {
         id: sudokuGenerator
+        
+        // Handle newly generated puzzles
         onSudokuGenerated: function(puzzle) {
             sudokuPuzzle = puzzle
             // Populate the grid with the generated puzzle
@@ -50,8 +64,11 @@ Item {
                 }
             }
         }
+        
+        // Handle puzzle check results
         onPuzzleChecked: function(status) {
             if (status === 1) { // Correct
+                // Get current grid state
                 var currentGrid = [];
                 for (var i = 0; i < 9; i++) {
                     var row = [];
@@ -63,7 +80,11 @@ Item {
                     }
                     currentGrid.push(row);
                 }
+                
+                // Save the completed puzzle
                 sudokuGenerator.savePuzzle(currentGrid, mainWindow.gameTimer.seconds, difficulty);
+                
+                // Show success popup
                 popup.popupTitle = "Congratulations!";
                 popup.popupText = "You have solved the puzzle correctly.";
                 popup.showCloseButton = true;
@@ -85,11 +106,12 @@ Item {
         }
     }
 
+    // Selected number display
     Rectangle {
         id: selectedNumberDisplay
-        width: 140  // Adjust size as needed
-        height: width  // Maintain 1:1 aspect ratio
-        radius: 5  // Slightly rounded corners
+        width: 140
+        height: width
+        radius: 5
         color: selectedNumber === 0 ? "transparent" : mainWindow.textMainColour
         border.color: mainWindow.borderMainColour
         border.width: 2
@@ -100,15 +122,16 @@ Item {
         Text {
             id: numberText
             text: sudokuGameScreen.selectedNumber === 0 ? "SELECT" : sudokuGameScreen.selectedNumber
-            color: sudokuGameScreen.selectedNumber === 0? mainWindow.textMainColour : "#455663"
+            color: sudokuGameScreen.selectedNumber === 0 ? mainWindow.textMainColour : "#455663"
             font {
-                pixelSize: sudokuGameScreen.selectedNumber === 0? 36 : 80
+                pixelSize: sudokuGameScreen.selectedNumber === 0 ? 36 : 80
                 bold: true
             }
             anchors.centerIn: parent
         }
     }
 
+    // Difficulty selection column
     Column {
         id: difficultyOptions
         spacing: 10
@@ -117,20 +140,18 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.rightMargin: 60
 
-        // Easy Option
+        // Easy option
         Text {
             id: easyOption
             text: "Easy"
             color: mainWindow.textMainColour
-            font {
-                pixelSize: 24
-            }
+            font.pixelSize: 24
             anchors.right: parent.right
 
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if(!mainWindow.gameTimer.running === true) {
+                    if (!mainWindow.gameTimer.running) {
                         difficulty = 1
                         selectionArrow.y = sudokuGameScreen.height/2 - difficultyOptions.height/2 + 5
                     }
@@ -138,20 +159,18 @@ Item {
             }
         }
 
-        // Medium Option
+        // Medium option
         Text {
             id: mediumOption
             text: "Medium"
             color: mainWindow.textMainColour
-            font {
-                pixelSize: 24
-            }
+            font.pixelSize: 24
             anchors.right: parent.right
 
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if(!mainWindow.gameTimer.running === true) {
+                    if (!mainWindow.gameTimer.running) {
                         difficulty = 2
                         selectionArrow.y = sudokuGameScreen.height/2 - mediumOption.height/2 + 5
                     }
@@ -159,20 +178,18 @@ Item {
             }
         }
 
-        // Hard Option
+        // Hard option
         Text {
             id: hardOption
             text: "Hard"
             color: mainWindow.textMainColour
-            font {
-                pixelSize: 24
-            }
+            font.pixelSize: 24
             anchors.right: parent.right
 
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if(!mainWindow.gameTimer.running === true) {
+                    if (!mainWindow.gameTimer.running) {
                         difficulty = 3
                         selectionArrow.y = sudokuGameScreen.height/2 + difficultyOptions.height/2 - hardOption.height + 5
                     }
@@ -181,7 +198,7 @@ Item {
         }
     }
 
-    // Single selection arrow image
+    // Selection arrow indicator
     Image {
         id: selectionArrow
         source: "qrc:/ImgResources/Screen/selectedOption.png"
@@ -191,33 +208,35 @@ Item {
             left: difficultyOptions.right
             leftMargin: 5
         }
-        y: sudokuGameScreen.height/2 - difficultyOptions.height/2 + 5// Start at Easy position
+        y: sudokuGameScreen.height/2 - difficultyOptions.height/2 + 5 // Start at Easy position
     }
 
-    // Sudoku Grid (9x9)
-    Rectangle{
-        id:borderControl
+    // Sudoku grid container
+    Rectangle {
+        id: borderControl
         anchors.left: parent.left
         anchors.leftMargin: 40
         anchors.verticalCenter: parent.verticalCenter
         width: Math.min(parent.width, parent.height) * 0.8
         height: width
-        color:"transparent"
+        color: "transparent"
         border.width: 2
         border.color: mainWindow.borderMainColour
 
-        Grid{
+        // 9x9 grid layout
+        Grid {
             id: sudokuGrid
             columns: 9
             rows: 9
             spacing: 0
             anchors.fill: parent
-            width: parent.width
-            height: parent.height
 
+            // Generate 81 cells (9x9)
             Repeater {
                 id: sudokuCellsRepeater
                 model: 81
+                
+                // Individual cell
                 Rectangle {
                     width: sudokuGrid.width / 9
                     height: sudokuGrid.height / 9
@@ -228,6 +247,7 @@ Item {
                     property bool isGiven: false
                     property bool isCorrect: false
 
+                    // Cell input field
                     TextInput {
                         id: cellInput
                         anchors.fill: parent
@@ -252,6 +272,7 @@ Item {
                         }
                     }
 
+                    // Cell click handler
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
@@ -273,6 +294,7 @@ Item {
         }
     }
 
+    // Start button
     Rectangle {
         id: startButton
         width: 100
@@ -287,33 +309,31 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: 60
 
-        Text{
-            text:"START"
+        Text {
+            text: "START"
             color: mainWindow.textMainColour
             anchors.centerIn: parent
-            font {
-
-                pixelSize: 15
-            }
+            font.pixelSize: 15
         }
-        MouseArea{
+        
+        MouseArea {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.BlankCursor
             onPressed: startButton.color = "#60228201"
-            onReleased: startButton.color ="transparent"
+            onReleased: startButton.color = "transparent"
             onClicked: {
-                    sudokuGenerator.generateSudoku(difficulty);
-                    mainWindow.gameTimer.running = true;
-                    mainWindow.gameTimer.seconds = 0;
-                    sudokuGameScreen.gameStarted = true;
-                    startButtonShowing = false
-                    sudokuGameScreen.forceActiveFocus()
-                }
-
+                sudokuGenerator.generateSudoku(difficulty);
+                mainWindow.gameTimer.running = true;
+                mainWindow.gameTimer.seconds = 0;
+                sudokuGameScreen.gameStarted = true;
+                startButtonShowing = false
+                sudokuGameScreen.forceActiveFocus()
+            }
         }
     }
 
+    // Finish button
     Rectangle {
         id: finishButton
         width: 100
@@ -322,27 +342,26 @@ Item {
         radius: 5
         border.width: 2
         border.color: mainWindow.borderMainColour
-        visible: (startButton.visible)? false: true
+        visible: !startButton.visible
         anchors.bottom: borderControl.bottom
         anchors.right: parent.right
         anchors.rightMargin: 60
 
-        Text{
+        Text {
             text: "FINISH"
             color: mainWindow.textMainColour
             anchors.centerIn: parent
-            font {
-
-                pixelSize: 15
-            }
+            font.pixelSize: 15
         }
-        MouseArea{
+        
+        MouseArea {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.BlankCursor
             onPressed: finishButton.color = "#60228201"
-            onReleased: finishButton.color ="transparent"
+            onReleased: finishButton.color = "transparent"
             onClicked: {
+                // Collect current grid state
                 var currentGrid = [];
                 for (var i = 0; i < 9; i++) {
                     var row = [];
@@ -359,6 +378,7 @@ Item {
         }
     }
 
+    // Back button
     BackButton {
         id: backButton
         anchors.bottom: borderControl.bottom
@@ -372,6 +392,7 @@ Item {
         }
     }
 
+    // Reset button
     Rectangle {
         id: endButton
         width: 100
@@ -385,34 +406,31 @@ Item {
         anchors.bottomMargin: 60
         anchors.right: parent.right
         anchors.rightMargin: 60
-        Text{
+        
+        Text {
             text: "RESET"
             color: mainWindow.textMainColour
             anchors.centerIn: parent
-            font {
-
-                pixelSize: 15
-            }
+            font.pixelSize: 15
         }
-        MouseArea{
+        
+        MouseArea {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.BlankCursor
             onPressed: endButton.color = "#60228201"
-            onReleased: endButton.color ="transparent"
+            onReleased: endButton.color = "transparent"
             onClicked: {
-                if(mainWindow.resetPopDisplayState){
-                popupResetConfirmation.visible = true;}
-                else{
-                    sudokuGameScreen.selectedNumber = 0;
-                    mainWindow.gameTimer.running = false;
-                    mainWindow.gameTimer.seconds = 0;
-                    sudokuGenerator.generateSudoku(difficulty);
-                    mainWindow.gameTimer.running = true;
+                if (mainWindow.resetPopDisplayState) {
+                    popupResetConfirmation.visible = true;
+                } else {
+                    resetGame();
                 }
             }
         }
     }
+    
+    // Reset confirmation popup
     Rectangle {
         id: popupResetConfirmation
         width: 400
@@ -428,6 +446,7 @@ Item {
         Column {
             anchors.fill: parent
             spacing: 10
+            
             Text {
                 text: "Are you Sure?"
                 font.bold: true
@@ -437,11 +456,14 @@ Item {
                 color: mainWindow.textMainColour
                 font.pixelSize: 20
             }
+            
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 40
                 spacing: 20
+                
+                // Yes button
                 Rectangle {
                     id: yesButton
                     width: 80
@@ -455,9 +477,7 @@ Item {
                         text: "Yes"
                         color: mainWindow.textMainColour
                         anchors.centerIn: parent
-                        font {
-                            pixelSize: 14
-                        }
+                        font.pixelSize: 14
                     }
 
                     MouseArea {
@@ -467,15 +487,13 @@ Item {
                         onPressed: yesButton.color = "#60228201"
                         onReleased: yesButton.color = "transparent"
                         onClicked: {
-                            sudokuGameScreen.selectedNumber = 0;
-                            mainWindow.gameTimer.running = false;
-                            mainWindow.gameTimer.seconds = 0;
-                            sudokuGenerator.generateSudoku(difficulty);
-                            mainWindow.gameTimer.running = true;
+                            resetGame();
                             popupResetConfirmation.visible = false;
                         }
                     }
                 }
+                
+                // No button
                 Rectangle {
                     id: noButton
                     width: 80
@@ -489,9 +507,7 @@ Item {
                         text: "No"
                         color: mainWindow.textMainColour
                         anchors.centerIn: parent
-                        font {
-                            pixelSize: 14
-                        }
+                        font.pixelSize: 14
                     }
 
                     MouseArea {
@@ -509,6 +525,7 @@ Item {
         }
     }
 
+    // Game status popup
     Rectangle {
         id: popup
         width: 400
@@ -529,6 +546,7 @@ Item {
         Column {
             anchors.fill: parent
             spacing: 10
+            
             Text {
                 text: popup.popupTitle
                 font.bold: true
@@ -538,17 +556,21 @@ Item {
                 color: mainWindow.textMainColour
                 font.pixelSize: 20
             }
+            
             Text {
                 text: popup.popupText
                 anchors.centerIn: parent
                 color: mainWindow.textMainColour
                 font.pixelSize: 15
             }
+            
             Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.bottom: parent.bottom
                 anchors.bottomMargin: 15
                 spacing: 20
+                
+                // Resume button
                 Rectangle {
                     id: resumeButton
                     width: 80
@@ -563,9 +585,7 @@ Item {
                         text: "Resume"
                         color: mainWindow.textMainColour
                         anchors.centerIn: parent
-                        font {
-                            pixelSize: 14
-                        }
+                        font.pixelSize: 14
                     }
 
                     MouseArea {
@@ -577,6 +597,8 @@ Item {
                         onClicked: popup.visible = false
                     }
                 }
+                
+                // Close button
                 Rectangle {
                     id: closeButton
                     width: 80
@@ -591,9 +613,7 @@ Item {
                         text: "Close"
                         color: mainWindow.textMainColour
                         anchors.centerIn: parent
-                        font {
-                            pixelSize: 14
-                        }
+                        font.pixelSize: 14
                     }
 
                     MouseArea {
@@ -613,5 +633,14 @@ Item {
                 }
             }
         }
+    }
+    
+    // Helper function to reset the game
+    function resetGame() {
+        sudokuGameScreen.selectedNumber = 0;
+        mainWindow.gameTimer.running = false;
+        mainWindow.gameTimer.seconds = 0;
+        sudokuGenerator.generateSudoku(difficulty);
+        mainWindow.gameTimer.running = true;
     }
 }

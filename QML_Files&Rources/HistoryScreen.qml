@@ -1,3 +1,10 @@
+/**
+ * HistoryScreen.qml
+ * 
+ * A screen that displays the history of completed Sudoku puzzles.
+ * Uses the HistoryRead C++ class to retrieve puzzle history.
+ */
+
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import com.sudoku.history 1.0
@@ -7,25 +14,28 @@ Item {
     width: parent.width
     height: parent.height
 
+    // History reader component
     HistoryRead {
         id: historyReader
     }
 
-    Text{
-        id:historyTitle
+    // Screen title
+    Text {
+        id: historyTitle
         text: "History"
-        anchors{
-            top:parent.top
+        anchors {
+            top: parent.top
             topMargin: 60
             horizontalCenter: parent.horizontalCenter
         }
-        font{
+        font {
             pixelSize: 24
             bold: true
         }
         color: mainWindow.textMainColour
     }
 
+    // Container for the history list
     Rectangle {
         id: listContainer
         anchors {
@@ -36,34 +46,53 @@ Item {
             horizontalCenter: parent.horizontalCenter
         }
         width: parent.width - 120
-        color: "transparent"  // Ensure the rectangle itself is transparent
+        color: "transparent"
 
+        // List view of history entries
         ListView {
             id: historyListView
             anchors.fill: parent
             spacing: 20
             clip: true  // Important for performance with many items
-            model: historyReader.getHistory()
-            // This enables scrolling but keeps the scrollbar invisible
-                        ScrollBar.vertical: ScrollBar {
-                            policy: ScrollBar.AlwaysOff
-                            visible: false
-                            interactive: false  // Prevents mouse interaction with the invisible bar
+            
+            // Load history data only once when the component is created
+            Component.onCompleted: {
+                model = historyReader.getHistory();
+            }
+            
+            // Invisible scrollbar for better performance
+            ScrollBar.vertical: ScrollBar {
+                policy: ScrollBar.AlwaysOff
+                visible: false
+                interactive: false
             }
 
+            // History entry delegate
             delegate: ItemDelegate {
                 width: historyListView.width
-                height: 60  // Fixed height as requested
-
+                height: 60
+                
+                // Entry background
                 background: Rectangle {
                     border.width: 2
                     border.color: mainWindow.borderMainColour
                     color: "transparent"
-                    radius: 5  // Optional: adds rounded corners
+                    radius: 5
                 }
 
+                // Entry content
                 contentItem: Text {
-                    text: "Date: " + modelData.date + " - Time: " + modelData.time + "s (Difficulty: " + (modelData.difficulty === 1 ? "Easy" : (modelData.difficulty === 2 ? "Medium" : "Hard")) + ")"
+                    // Format difficulty text once instead of using conditional operators in the binding
+                    readonly property string difficultyText: {
+                        switch(modelData.difficulty) {
+                            case 1: return "Easy";
+                            case 2: return "Medium";
+                            case 3: return "Hard";
+                            default: return "Unknown";
+                        }
+                    }
+                    
+                    text: "Date: " + modelData.date + " - Time: " + modelData.time + "s (Difficulty: " + difficultyText + ")"
                     color: mainWindow.textMainColour
                     font.pixelSize: 16
                     elide: Text.ElideRight
@@ -74,6 +103,7 @@ Item {
                     rightPadding: 20
                 }
 
+                // Navigate to puzzle detail view when clicked
                 onClicked: {
                     stackView.push("PuzzleHistoryView.qml", {
                         date: modelData.date,
@@ -86,6 +116,7 @@ Item {
         }
     }
 
+    // Back button
     BackButton {
         id: backButton
         anchors {

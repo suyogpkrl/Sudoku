@@ -1,3 +1,10 @@
+/**
+ * SettingsScreen.qml
+ * 
+ * A screen that allows users to configure application settings.
+ * Includes display, sound, and accessibility options.
+ */
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Window
@@ -10,17 +17,20 @@ Item {
     visible: true
     anchors.centerIn: parent
 
+    // Settings properties
     property int screenState: mainWindow.visibility
-    property bool playTuneOnSolve: true // Default to true
-    property bool backgroundSound: true // Default to true
-    property var backgroundColors: ["#bb3f17" , "#3f6032"]
-    property var backgroundColorsName: ["Rust","Deep Moss Green"]
+    property bool playTuneOnSolve: true
+    property bool backgroundSound: true
+    property var backgroundColors: ["#bb3f17", "#3f6032"]
+    property var backgroundColorsName: ["Rust", "Deep Moss Green"]
     property int backgroundColorIndex: 0
 
+    // Initialize settings from main window
     Component.onCompleted: {
         backgroundSound = mainWindow.backgroundSoundOn
     }
 
+    // Settings container
     Column {
         id: settingsColumn
         width: parent.width
@@ -33,17 +43,19 @@ Item {
             width: parent.width
             spacing: 10
 
+            // Section header
             Text {
                 text: "Display"
                 color: mainWindow.textMainColour
-                font.pixelSize: 24
-                font.bold: true
-                //font.family: quicksandBold.name
+                font {
+                    pixelSize: 24
+                    bold: true
+                }
                 anchors.left: parent.left
                 anchors.leftMargin: parent.width * 0.05
             }
 
-            // New: Background Color Setting
+            // Background Color Setting
             Row {
                 width: parent.width * 0.8
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -53,7 +65,6 @@ Item {
                     text: "Background Color:"
                     color: mainWindow.textMainColour
                     font.pixelSize: 20
-                    //font.family: quicksandBold.name
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -63,16 +74,15 @@ Item {
                     text: backgroundColorsName[backgroundColorIndex]
                     color: mainWindow.textMainColour
                     font.pixelSize: 20
-                    //font.family: quicksandBold.name
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
 
+                    // Toggle background color on click
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             backgroundColorIndex = (backgroundColorIndex + 1) % backgroundColors.length
-
                             mainWindow.color = backgroundColors[backgroundColorIndex]
                         }
                     }
@@ -85,12 +95,14 @@ Item {
             width: parent.width
             spacing: 10
 
+            // Section header
             Text {
                 text: "Sound"
                 color: mainWindow.textMainColour
-                font.pixelSize: 24
-                font.bold: true
-                //font.family: quicksandBold.name
+                font {
+                    pixelSize: 24
+                    bold: true
+                }
                 anchors.left: parent.left
                 anchors.leftMargin: parent.width * 0.05
             }
@@ -105,7 +117,6 @@ Item {
                     text: "Play Tune on Solve:"
                     color: mainWindow.textMainColour
                     font.pixelSize: 20
-                    //font.family: quicksandBold.name
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -115,22 +126,21 @@ Item {
                     text: playTuneOnSolve ? "On" : "Off"
                     color: mainWindow.textMainColour
                     font.pixelSize: 20
-                    //font.family: quicksandBold.name
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
 
+                    // Toggle play tune setting on click
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             playTuneOnSolve = !playTuneOnSolve
-                            console.log("Play tune on solve: " + playTuneOnSolve)
                         }
                     }
                 }
             }
 
-            // New: Background Sound Setting
+            // Background Sound Setting
             Row {
                 width: parent.width * 0.8
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -140,7 +150,6 @@ Item {
                     text: "Background Sound:"
                     color: mainWindow.textMainColour
                     font.pixelSize: 20
-                    //font.family: quicksandBold.name
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
@@ -150,23 +159,22 @@ Item {
                     text: backgroundSound ? "On" : "Off"
                     color: mainWindow.textMainColour
                     font.pixelSize: 20
-                    //font.family: quicksandBold.name
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
 
+                    // Toggle background sound on click
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             backgroundSound = !backgroundSound
                             mainWindow.backgroundSoundOn = backgroundSound
-                            console.log("Background sound: " + backgroundSound)
                         }
                     }
                 }
             }
 
-            // New: Master Volume Setting (Slider)
+            // Master Volume Setting
             Row {
                 width: parent.width * 0.8
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -176,35 +184,45 @@ Item {
                     text: "Master Volume:"
                     color: mainWindow.textMainColour
                     font.pixelSize: 20
-                    //font.family: quicksandBold.name
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
 
+                // Volume slider with custom styling
                 Slider {
                     id: masterVolumeSlider
                     anchors.right: parent.right
-                    width: parent.width * 0.5 // Adjust width as needed
+                    width: parent.width * 0.5
                     from: 0.0
                     to: 1.0
                     stepSize: 0.1
                     value: 0.5 // Default volume
+                    
+                    // Custom slider track
                     background: Rectangle {
                         implicitWidth: 200
                         implicitHeight: 4
                         radius: 2
                         color: mainWindow.textMainColour
+                        
+                        // Show filled portion of the slider
+                        Rectangle {
+                            width: masterVolumeSlider.visualPosition * parent.width
+                            height: parent.height
+                            color: mainWindow.textMainColour
+                            radius: 2
+                        }
                     }
+                    
+                    // Custom slider handle
                     handle: Rectangle {
-                        x: masterVolumeSlider.leftPadding + masterVolumeSlider.visualPosition * (masterVolumeSlider.availableWidth - implicitWidth)
-                        implicitWidth: 20
-                        implicitHeight: 20
+                        x: masterVolumeSlider.leftPadding + masterVolumeSlider.visualPosition * 
+                           (masterVolumeSlider.availableWidth - width)
+                        y: masterVolumeSlider.topPadding + masterVolumeSlider.availableHeight / 2 - height / 2
+                        width: 20
+                        height: 20
                         radius: 10
                         color: mainWindow.textMainColour
-                    }
-                    onValueChanged: {
-                        console.log("Master Volume: " + value)
-                        // Implement master volume control logic here
                     }
                 }
             }
@@ -215,12 +233,14 @@ Item {
             width: parent.width
             spacing: 10
 
+            // Section header
             Text {
                 text: "Accessibility"
                 color: mainWindow.textMainColour
-                font.pixelSize: 24
-                font.bold: true
-                //font.family: quicksandBold.name
+                font {
+                    pixelSize: 24
+                    bold: true
+                }
                 anchors.left: parent.left
                 anchors.leftMargin: parent.width * 0.05
             }
@@ -235,20 +255,19 @@ Item {
                     text: "Reset Popup:"
                     color: mainWindow.textMainColour
                     font.pixelSize: 20
-                    //font.family: quicksandBold.name
                     anchors.left: parent.left
                     verticalAlignment: Text.AlignVCenter
                 }
 
                 Text {
                     id: resetPopupToggle
-                    text: (mainWindow.resetPopDisplayState)?"Show":"Don't Show"
+                    text: (mainWindow.resetPopDisplayState) ? "Show" : "Don't Show"
                     color: mainWindow.textMainColour
                     font.pixelSize: 20
-                    //font.family: quicksandBold.name
                     anchors.right: parent.right
                     verticalAlignment: Text.AlignVCenter
 
+                    // Toggle reset popup setting on click
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
@@ -261,17 +280,20 @@ Item {
         }
     }
 
-    // Sound effect for puzzle solved (example, you'd trigger this from game logic)
+    // Sound effect for puzzle solved
     SoundEffect {
         id: puzzleSolvedSound
-        source: "qrc:/sounds/puzzle_solved" // Replace with your sound file
-        volume: playTuneOnSolve ? 1.0 : 0.0 // Control volume based on setting
+        source: "qrc:/AudioResources/SoundEffects/winningSoundEffect.wav"
+        volume: playTuneOnSolve ? masterVolumeSlider.value : 0.0
     }
 
+    // Back button
     BackButton {
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        anchors.margins: 40
+        anchors {
+            bottom: parent.bottom
+            right: parent.right
+            margins: 40
+        }
         onClicked: {
             stackView.pop()
         }
