@@ -2,7 +2,7 @@
 
 A nostalgic Sudoku game with a retro computer aesthetic built using Qt/QML.
 
-![Retro Sudoku](https://github.com/yourusername/retro-sudoku/raw/main/screenshots/main-screen.png)
+![Retro Sudoku](https://github.com/A-Little-Mouse/retro-sudoku/raw/main/screenshots/main-screen.png)
 
 ## Features
 
@@ -58,43 +58,6 @@ Review your completed puzzles, including:
 - CMake 3.16+
 - C++ compiler with C++17 support
 
-### Building from Source
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/retro-sudoku.git
-cd retro-sudoku
-```
-
-2. Create a build directory:
-```bash
-mkdir build && cd build
-```
-
-3. Configure with CMake:
-```bash
-cmake ..
-```
-
-4. Build the project:
-```bash
-cmake --build .
-```
-
-5. Run the application:
-```bash
-./RetroSudoku
-```
-
-### Pre-built Binaries
-
-Pre-built binaries are available for:
-- Windows
-- macOS
-- Linux
-
-Download from the [Releases](https://github.com/yourusername/retro-sudoku/releases) page.
-
 ## How to Play
 
 1. **Start the Game**: Click the power button on the virtual computer
@@ -107,38 +70,12 @@ Download from the [Releases](https://github.com/yourusername/retro-sudoku/releas
 5. **Finishing**: Click "FINISH" to check your solution
 6. **Saving**: Completed puzzles are automatically saved to your history
 
-## Project Structure
-
-```
-QT_project/
-├── AudioResources/       # Sound effects and music
-├── ImgResources/         # UI images and graphics
-├── *.cpp, *.h            # C++ backend files
-├── *.qml                 # QML UI files
-├── CMakeLists.txt        # CMake build configuration
-└── qml.qrc               # Resource collection file
-```
-
 ## Core Components
 
 - **SudokuGenerator**: Generates and validates Sudoku puzzles
 - **Solver**: Implements backtracking algorithm to solve puzzles
 - **HistoryRead**: Manages puzzle history and storage
 - **UI Screens**: Main, Play, Solver, History, and Settings screens
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
