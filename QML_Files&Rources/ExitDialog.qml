@@ -1,13 +1,15 @@
 /**
  * ExitDialog.qml
- * 
+ *
  * A dialog component that confirms if the user wants to exit the application.
  * Provides Yes/No options and handles the exit process.
  */
 
+// Disable import warnings for this file pragma Prefer: NoWarnings
+
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts 1.15
+import QtQuick.Layouts
 
 Rectangle {
     id: exitDialog
@@ -19,6 +21,7 @@ Rectangle {
     border.width: 2
     anchors.centerIn: overlayRectangle
     visible: false
+    clip: true
     z: 99
 
     // Allow customization of the dialog title
@@ -30,7 +33,15 @@ Rectangle {
         source: "qrc:/ImgResources/Screen/Monitor.png"
         height: monitorImage.height
         fillMode: Image.PreserveAspectFit
-        anchors.centerIn: ApplicationWindow
+
+        // Adjust vertical position with an offset
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            verticalCenter: parent.verticalCenter
+            verticalCenterOffset: +parent.height * 0.2 // Adjust this value as needed
+        }
+
+        z: -1 // Ensure it's behind the dialog content
         // This image could be cached or optimized further
     }
 
@@ -131,6 +142,6 @@ Rectangle {
      * Opens the exit dialog
      */
     function open() {
-        exitDialog.visible = true
+        exitDialog.visible = true;
     }
 }

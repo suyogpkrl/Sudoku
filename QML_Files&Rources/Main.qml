@@ -53,7 +53,7 @@ ApplicationWindow {
     // Background music player
     MediaPlayer {
         id: playerMusic
-        source: "qrc:/AudioResources/Music/sound_1.mp3"
+        source: "qrc:/AudioResources/Music/GlassBeans-MahalEP.mp3"
         audioOutput: AudioOutput {}
         loops: MediaPlayer.Infinite
     }

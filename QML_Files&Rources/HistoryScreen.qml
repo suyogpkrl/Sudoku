@@ -1,6 +1,6 @@
 /**
  * HistoryScreen.qml
- * 
+ *
  * A screen that displays the history of completed Sudoku puzzles.
  * Uses the HistoryRead C++ class to retrieve puzzle history.
  */
@@ -17,6 +17,15 @@ Item {
     // History reader component
     HistoryRead {
         id: historyReader
+    }
+
+    Text{
+        id:noHistory
+        text:"Solve atleast one puzzle"
+        color: mainWindow.textMainColour
+        font.pixelSize: 20
+        visible: historyListView.count === 0
+        anchors.centerIn: parent
     }
 
     // Screen title
@@ -54,12 +63,12 @@ Item {
             anchors.fill: parent
             spacing: 20
             clip: true  // Important for performance with many items
-            
+
             // Load history data only once when the component is created
             Component.onCompleted: {
                 model = historyReader.getHistory();
             }
-            
+
             // Invisible scrollbar for better performance
             ScrollBar.vertical: ScrollBar {
                 policy: ScrollBar.AlwaysOff
@@ -71,7 +80,7 @@ Item {
             delegate: ItemDelegate {
                 width: historyListView.width
                 height: 60
-                
+
                 // Entry background
                 background: Rectangle {
                     border.width: 2
@@ -91,7 +100,7 @@ Item {
                             default: return "Unknown";
                         }
                     }
-                    
+
                     text: "Date: " + modelData.date + " - Time: " + modelData.time + "s (Difficulty: " + difficultyText + ")"
                     color: mainWindow.textMainColour
                     font.pixelSize: 16
