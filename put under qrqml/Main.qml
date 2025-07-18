@@ -1,3 +1,10 @@
+/**
+ * main.qml
+ *
+ * The main application window for the Sudoku game.
+ * Provides the retro computer monitor interface and main menu.
+ */
+
 import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
@@ -13,37 +20,45 @@ ApplicationWindow {
     visibility: Window.FullScreen
     color: "#bb3f17"
 
+    // Image properties
+    property alias monitorImage: monitorImage
+    property alias overlayRectangle: overlayRectangle
 
-    //For Setting
+    // Settings properties
     property bool backgroundSoundOn: false
     property bool resetPopDisplayState: true
 
-    //Start Up
+    // Startup properties
     property bool powerOn: false
     property bool longPressPowerOn: false
 
-    //for program functionality
+    // Program functionality properties
     property alias gameTimer: gameTimer
-    property bool menuColumnVisible : menuColumn.visible
+    property bool menuColumnVisible: menuColumn.visible
 
-    //for Themes
+    // Theme properties
     property color textMainColour: "#228201"
     property color borderMainColour: "#228201"
     property bool showCursor: false
+
+    // Initialize application style
     Component.onCompleted: ApplicationWindow.style = Fusion
 
-    //some functions
+    // Handle background sound changes
     onBackgroundSoundOnChanged: backgroundSoundOn ? playerMusic.play() : playerMusic.pause()
 
+    // Handle menu visibility changes
     onMenuColumnVisibleChanged: menuColumnAnim.start()
 
+    // Background music player
     MediaPlayer {
         id: playerMusic
-        source: "qrc:/AudioResources/Music/GlassBeans-MahalEP.mp3"
+        source: "qrc:/AudioResources/Music/sound_1.mp3"
         audioOutput: AudioOutput {}
+        loops: MediaPlayer.Infinite
     }
 
-    // Cursor area
+    // Cursor area overlay
     Rectangle {
         id: overlayRectangle
         width: parent.width * 0.48
@@ -56,6 +71,7 @@ ApplicationWindow {
         color: "transparent"
         z: 1000
 
+        // Title container
         Rectangle {
             anchors.centerIn: parent
             visible: true
@@ -64,7 +80,8 @@ ApplicationWindow {
             clip: true
             color: "transparent"
 
-            Rectangle{
+            // Animated title
+            Rectangle {
                 id: sudokuTitle
                 visible: true
                 anchors.left: parent.left
@@ -72,14 +89,16 @@ ApplicationWindow {
                 height: childrenRect.height
                 clip: true
                 color: "transparent"
+
                 Text {
-                    id:sudokuTitleText
+                    id: sudokuTitleText
                     text: "SUDOKU"
                     color: mainWindow.textMainColour
                     font { pixelSize: 80; bold: true }
                     anchors.left: parent.left
                 }
 
+                // Title animation
                 SequentialAnimation on width {
                     id: sudokuTitleAnimation
                     running: false
@@ -98,6 +117,7 @@ ApplicationWindow {
             }
         }
 
+        // Custom cursor image
         Image {
             id: customCursorImage
             source: "qrc:/ImgResources/Cursor/customCursor.png"
@@ -105,8 +125,13 @@ ApplicationWindow {
             z: 100
             height: 28
             fillMode: Image.PreserveAspectFit
+
+            // Cache the image for better performance
+            cache: true
+            asynchronous: true
         }
 
+        // Mouse area for custom cursor
         MouseArea {
             anchors.fill: parent
             anchors.margins: 20
@@ -114,16 +139,17 @@ ApplicationWindow {
             acceptedButtons: Qt.NoButton
             propagateComposedEvents: true
             cursorShape: mainWindow.powerOn ? Qt.BlankCursor : Qt.ArrowCursor
+
             onEntered: if(mainWindow.powerOn) customCursorImage.visible = true
             onExited: customCursorImage.visible = false
+
             onPositionChanged: {
                 customCursorImage.x = mouse.x + 20
                 customCursorImage.y = mouse.y + 20
             }
         }
     }
-
-    // Disk control
+    //Disk control (music toggle)
     Image {
         id: diskImage
         source: "qrc:/ImgResources/Disk.png"
@@ -136,6 +162,11 @@ ApplicationWindow {
             bottomMargin: parent.height * 0.05
         }
 
+        // Cache the image for better performance
+        cache: true
+        asynchronous: true
+
+        // Disk rotation animation
         RotationAnimation on rotation {
             id: diskRotationAnimation
             from: 0
@@ -145,6 +176,7 @@ ApplicationWindow {
             running: mainWindow.backgroundSoundOn
         }
 
+        // Disk click handler
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
@@ -152,10 +184,12 @@ ApplicationWindow {
             onExited: diskImage.scale = 1.0
             onClicked: if(powerOn) mainWindow.backgroundSoundOn = !mainWindow.backgroundSoundOn
         }
+
+        // Smooth scale animation
         Behavior on scale { PropertyAnimation { duration: 500 } }
     }
 
-    // Main monitor
+    // Main monitor image
     Image {
         id: monitorImage
         source: "qrc:/ImgResources/Screen/Monitor.png"
@@ -163,37 +197,49 @@ ApplicationWindow {
         anchors.centerIn: parent
         fillMode: Image.PreserveAspectFit
 
+        // Cache the image for better performance
+        cache: true
+        asynchronous: true
+
         // Power button
         Image {
             id: offButton
             source: mainWindow.powerOn ? "qrc:/ImgResources/Screen/ONButton.png" : "qrc:/ImgResources/Screen/OFFButton.png"
-            height: parent.height*0.05
+            height: parent.height * 0.05
             fillMode: Image.PreserveAspectFit
             anchors {
                 right: parent.right
                 bottom: parent.bottom
-                rightMargin: parent.width*0.0265
-                bottomMargin: parent.height*0.0325
+                rightMargin: parent.width * 0.0265
+                bottomMargin: parent.height * 0.0325
             }
 
+            // Cache the image for better performance
+            cache: true
+            asynchronous: true
+
+            // Button press animation
             SequentialAnimation on scale {
                 id: onButtonPressedAnim
                 running: false
                 loops: 1
                 NumberAnimation { to: 0.94; duration: 100 }
             }
+
+            // Button release animation
             SequentialAnimation on scale {
                 id: onButtonReleasedAnim
                 running: false
                 loops: 1
                 NumberAnimation { to: 1.0; duration: 100 }
             }
-
+   // Power button click handler
             MouseArea {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 anchors.fill: parent
 
+                // Timer for long-press to quit
                 Timer {
                     id: powerOffTimer
                     interval: 3000
@@ -231,7 +277,7 @@ ApplicationWindow {
     Image {
         id: timerIcon
         source: "qrc:/ImgResources/Time/Timer.png"
-        height: parent.height*0.2
+        height: parent.height * 0.2
         fillMode: Image.PreserveAspectFit
         anchors {
             left: parent.left
@@ -239,32 +285,42 @@ ApplicationWindow {
         }
         y: parent.height - height * 0.2
 
+        // Cache the image for better performance
+        cache: true
+        asynchronous: true
+
+        // Timer indicator light
         Image {
             id: timerOnBlink
             source: "qrc:/ImgResources/Time/TimerBlink.png"
-            height: timerIcon.height *0.0919
-            width: height*1080/665
+            height: timerIcon.height * 0.0919
+            width: height * 1080/665
             anchors {
                 right: parent.right
-                rightMargin: parent.width* 0.0811
+                rightMargin: parent.width * 0.0811
                 top: parent.top
-                topMargin: parent.height*0.246
+                topMargin: parent.height * 0.246
             }
             rotation: 0.4
+
+            // Cache the image for better performance
+            cache: true
+            asynchronous: true
         }
 
-        Behavior on y { PropertyAnimation { duration: 500; easing.type: Easing.OutCubic } }
-
+        // Smooth movement animation
+        Behavior on y { PropertyAnimation { duration: 500; easing.type: Easing.OutCubic } }        //Timer display
         Row {
             id: timerText
             anchors {
                 top: parent.top
-                topMargin: parent.height*0.26
+                topMargin: parent.height * 0.26
                 right: parent.right
-                rightMargin: parent.width*0.319
+                rightMargin: parent.width * 0.319
             }
-            spacing: parent.width*0.14
+            spacing: parent.width * 0.14
 
+            // Minutes display
             Text {
                 id: minuteText
                 text: "00"
@@ -272,6 +328,7 @@ ApplicationWindow {
                 color: mainWindow.textMainColour
             }
 
+            // Seconds display
             Text {
                 id: secondText
                 text: "00"
@@ -279,6 +336,7 @@ ApplicationWindow {
                 font.pixelSize: 40
             }
 
+            // Blinking animation for active timer
             SequentialAnimation {
                 id: switchAnimation
                 running: false
@@ -289,12 +347,14 @@ ApplicationWindow {
                 PauseAnimation { duration: 500 }
             }
 
+            // Game timer
             Timer {
                 id: gameTimer
                 interval: 1000
                 running: false
                 repeat: true
                 property int seconds: 0
+
                 onTriggered: {
                     switchAnimation.start()
                     seconds++
@@ -303,6 +363,7 @@ ApplicationWindow {
                     minuteText.text = Qt.formatTime(new Date(0, 0, 0, 0, minutes, 0), "mm")
                     secondText.text = Qt.formatTime(new Date(0, 0, 0, 0, 0, remainingSeconds), "ss")
                 }
+
                 onRunningChanged: {
                     switchAnimation.stop()
                     timerOnBlink.source = "qrc:/ImgResources/Time/TimerBlink.png"
@@ -310,7 +371,6 @@ ApplicationWindow {
             }
         }
     }
-
     // Main menu stack
     StackView {
         id: stackView
@@ -320,71 +380,66 @@ ApplicationWindow {
             width: overlayRectangle.width
             height: overlayRectangle.height
 
-
+            // Main menu column
             Column {
                 id: menuColumn
                 visible: false // Initially hidden
 
-                SequentialAnimation on scale{
-                 id:menuColumnAnim
-                 running:false
-                 loops:1
-                 NumberAnimation { property: "scale"; duration: 500; from: 0.85; to: 1.0 }
+                // Menu animation
+                SequentialAnimation on scale {
+                    id: menuColumnAnim
+                    running: false
+                    loops: 1
+                    NumberAnimation { property: "scale"; duration: 500; from: 0.85; to: 1.0 }
                 }
 
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
-                anchors.rightMargin: parent.width*0.15
+                anchors.rightMargin: parent.width * 0.15
                 spacing: 30
 
+                // Play option
                 Text {
                     id: playOption
                     text: "PLAY"
                     color: mainWindow.textMainColour
-                    font {
-                        //family: quicksandMedium.name
-                        pixelSize: 32
-                    }
+                    font.pixelSize: 32
                     anchors.right: parent.right
 
-                    SequentialAnimation on scale{
-                        id:playAnim
+                    // Hover animation
+                    SequentialAnimation on scale {
+                        id: playAnim
                         running: false
                         loops: 1
-                        //animation which effects numerical value
-                        NumberAnimation { to: 1.1; duration: 100 } //grows the text to 1.1 times its original size in 1 second
-                        NumberAnimation { to: 1.0; duration: 100 }//vice versa
+                        NumberAnimation { to: 1.1; duration: 100 }
+                        NumberAnimation { to: 1.0; duration: 100 }
                     }
 
                     MouseArea {
                         hoverEnabled: true
                         cursorShape: Qt.BlankCursor
                         anchors.fill: parent
-                        onEntered:playAnim.start()
+                        onEntered: playAnim.start()
                         onClicked: {
                             stackView.push("PlayScreen.qml")
                         }
                     }
                 }
-
+       // Solver option
                 Text {
                     id: solveOption
                     text: "SOLVER"
                     color: mainWindow.textMainColour
-                    font {
-                        //family: quicksandMedium.name
-                        pixelSize: 32
-                    }
+                    font.pixelSize: 32
                     anchors.right: parent.right
 
-                    SequentialAnimation on scale{
-                        id:solveAnim
+                    // Hover animation
+                    SequentialAnimation on scale {
+                        id: solveAnim
                         running: false
                         loops: 1
-                        //animation which effects numerical value
-                        NumberAnimation { to: 1.1; duration: 100 } //grows the text to 1.1 times its original size in 1 second
-                        NumberAnimation { to: 1.0; duration: 100 }//vice versa
-
+                        NumberAnimation { to: 1.1; duration: 100 }
+                        NumberAnimation { to: 1.0; duration: 100 }
                     }
 
                     MouseArea {
@@ -398,24 +453,21 @@ ApplicationWindow {
                     }
                 }
 
+                // History option
                 Text {
                     id: historyOption
                     text: "HISTORY"
                     color: mainWindow.textMainColour
-                    font {
-                        //family: quicksandMedium.name
-                        pixelSize: 32
-                    }
+                    font.pixelSize: 32
                     anchors.right: parent.right
 
-                    SequentialAnimation on scale{
-                        id:historyAnim
+                    // Hover animation
+                    SequentialAnimation on scale {
+                        id: historyAnim
                         running: false
                         loops: 1
-                        //animation which effects numerical value
-                        NumberAnimation { to: 1.1; duration: 100 } //grows the text to 1.1 times its original size in 1 second
-                        NumberAnimation { to: 1.0; duration: 100 }//vice versa
-
+                        NumberAnimation { to: 1.1; duration: 100 }
+                        NumberAnimation { to: 1.0; duration: 100 }
                     }
 
                     MouseArea {
@@ -428,25 +480,21 @@ ApplicationWindow {
                         }
                     }
                 }
-
+             // Settings option
                 Text {
                     id: settingOption
                     text: "SETTING"
                     color: mainWindow.textMainColour
-                    font {
-                        //family: quicksandMedium.name
-                        pixelSize: 32
-                    }
+                    font.pixelSize: 32
                     anchors.right: parent.right
 
-                    SequentialAnimation on scale{
-                        id:settingAnim
+                    // Hover animation
+                    SequentialAnimation on scale {
+                        id: settingAnim
                         running: false
                         loops: 1
-                        //animation which effects numerical value
-                        NumberAnimation { to: 1.1; duration: 100 } //grows the text to 1.1 times its original size in 1 second
-                        NumberAnimation { to: 1.0; duration: 100 }//vice versa
-
+                        NumberAnimation { to: 1.1; duration: 100 }
+                        NumberAnimation { to: 1.0; duration: 100 }
                     }
 
                     MouseArea {
@@ -460,25 +508,21 @@ ApplicationWindow {
                     }
                 }
 
+                // Exit option
                 Text {
                     id: exitOption
                     text: "EXIT"
                     color: mainWindow.textMainColour
-                    font {
-                        //family: quicksandMedium.name
-                        pixelSize: 32
-                    }
+                    font.pixelSize: 32
                     anchors.right: parent.right
 
-
-                    SequentialAnimation on scale{
-                        id:exitAnim
+                    // Hover animation
+                    SequentialAnimation on scale {
+                        id: exitAnim
                         running: false
                         loops: 1
-                        //animation which effects numerical value
-                        NumberAnimation { to: 1.1; duration: 100 } //grows the text to 1.1 times its original size in 1 second
-                        NumberAnimation { to: 1.0; duration: 100 }//vice versa
-
+                        NumberAnimation { to: 1.1; duration: 100 }
+                        NumberAnimation { to: 1.0; duration: 100 }
                     }
 
                     MouseArea {
@@ -486,15 +530,14 @@ ApplicationWindow {
                         cursorShape: Qt.BlankCursor
                         anchors.fill: parent
                         onEntered: exitAnim.start()
-                        onClicked:
-                        {
+                        onClicked: {
                             exitDialog.open()
                         }
                     }
                 }
             }
         }
-
+        //Stack view transitions
         pushEnter: Transition {
             NumberAnimation { property: "scale"; duration: 90; from: 0.85; to: 1.0 }
         }
@@ -509,14 +552,17 @@ ApplicationWindow {
         }
     }
 
+    // Exit confirmation dialog
     ExitDialog {
         id: exitDialog
     }
 
+    // Sound effects
     SoundEffect {
         id: computerOnPressedSoundEffect
         source: "qrc:/AudioResources/SoundEffects/computerOnPressedsoundeffect_EvJlnX9w.wav"
     }
+
     SoundEffect {
         id: computerOnReleasedSoundEffect
         source: "qrc:/AudioResources/SoundEffects/computerOnReleasedsoundeffect_KRd6hpUb.wav"
