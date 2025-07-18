@@ -1,6 +1,6 @@
 # Retro Sudoku
 
-A nostalgic Sudoku game with a retro computer aesthetic built using Qt/QML.
+A Sudoku game with a retro computer aesthetic built using Qt/QML.
 
 ![Retro Sudoku](https://github.com/A-Little-Mouse/Sudoku/blob/main/screenshots/main-screen.png)
 
