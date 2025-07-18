@@ -80,7 +80,7 @@ Review your completed puzzles, including:
 ## Acknowledgments
 
 - Sound effects from [Freesound](https://freesound.org/)
-- Background music: "Glass Beans" by Mahal EP
+- Background music: Add a music as sound_1 in /AudioResources/Music/
 - Inspiration from retro computing aesthetics
 
 ---
