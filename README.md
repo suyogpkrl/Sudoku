@@ -2,7 +2,7 @@
 
 A nostalgic Sudoku game with a retro computer aesthetic built using Qt/QML.
 
-![Retro Sudoku](https://github.com/A-Little-Mouse/retro-sudoku/raw/main/screenshots/main-screen.png)
+![Retro Sudoku](https://github.com/A-Little-Mouse/Sudoku/blob/main/screenshots/history-screen.png)
 
 ## Features
 
@@ -17,12 +17,12 @@ A nostalgic Sudoku game with a retro computer aesthetic built using Qt/QML.
 
 <table>
   <tr>
-    <td><img src="https://github.com/yourusername/retro-sudoku/raw/main/screenshots/main-menu.png" alt="Main Menu" width="400"/></td>
-    <td><img src="https://github.com/yourusername/retro-sudoku/raw/main/screenshots/gameplay.png" alt="Gameplay" width="400"/></td>
+    <td><img src="https://github.com/A-Little-Mouse/Sudoku/blob/main/screenshots/main-menu.png" alt="Main Menu" width="400"/></td>
+    <td><img src="https://github.com/A-Little-Mouse/Sudoku/blob/main/screenshots/play-screen.png" alt="Gameplay" width="400"/></td>
   </tr>
   <tr>
-    <td><img src="https://github.com/yourusername/retro-sudoku/raw/main/screenshots/solver.png" alt="Solver" width="400"/></td>
-    <td><img src="https://github.com/yourusername/retro-sudoku/raw/main/screenshots/history.png" alt="History" width="400"/></td>
+    <td><img src="https://github.com/A-Little-Mouse/Sudoku/blob/main/screenshots/solver-screen.png" alt="Solver" width="400"/></td>
+    <td><img src="https://github.com/A-Little-Mouse/Sudoku/blob/main/screenshots/setting-screen.png" alt="History" width="400"/></td>
   </tr>
 </table>
 
