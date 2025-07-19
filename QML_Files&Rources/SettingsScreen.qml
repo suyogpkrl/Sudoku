@@ -1,6 +1,6 @@
 /**
  * SettingsScreen.qml
- * 
+ *
  * A screen that allows users to configure application settings.
  * Includes display, sound, and accessibility options.
  */
@@ -197,14 +197,14 @@ Item {
                     to: 1.0
                     stepSize: 0.1
                     value: 0.5 // Default volume
-                    
+
                     // Custom slider track
                     background: Rectangle {
                         implicitWidth: 200
                         implicitHeight: 4
                         radius: 2
                         color: mainWindow.textMainColour
-                        
+
                         // Show filled portion of the slider
                         Rectangle {
                             width: masterVolumeSlider.visualPosition * parent.width
@@ -213,10 +213,10 @@ Item {
                             radius: 2
                         }
                     }
-                    
+
                     // Custom slider handle
                     handle: Rectangle {
-                        x: masterVolumeSlider.leftPadding + masterVolumeSlider.visualPosition * 
+                        x: masterVolumeSlider.leftPadding + masterVolumeSlider.visualPosition *
                            (masterVolumeSlider.availableWidth - width)
                         y: masterVolumeSlider.topPadding + masterVolumeSlider.availableHeight / 2 - height / 2
                         width: 20

@@ -54,9 +54,16 @@ ApplicationWindow {
     MediaPlayer {
         id: playerMusic
         source: "qrc:/AudioResources/Music/GlassBeans-MahalEP.mp3"
-        audioOutput: AudioOutput {}
+        audioOutput: AudioOutput {
+            id: musicAudioOutput
+            volume: 0.5 // Initial volume at 50%\
+            onVolumeChanged: {
+
+            }
+        }
         loops: MediaPlayer.Infinite
     }
+
 
     // Cursor area overlay
     Rectangle {
