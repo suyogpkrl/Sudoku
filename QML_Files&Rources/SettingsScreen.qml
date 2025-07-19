@@ -216,20 +216,9 @@ Item {
 
                     // Custom slider handle
                     handle: Rectangle {
-
-                        property int Slidercords : handleball.x
-                        onSlidercordsChanged: {
-                            adjustVolume: slidercords;
-
-                        }
-
-
                         x: masterVolumeSlider.leftPadding + masterVolumeSlider.visualPosition *
                            (masterVolumeSlider.availableWidth - width)
                         y: masterVolumeSlider.topPadding + masterVolumeSlider.availableHeight / 2 - height / 2
-
-
-
                         width: 20
                         height: 20
                         radius: 10
