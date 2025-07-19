@@ -1,6 +1,6 @@
-# Retro Sudoku
+# Sudoku
 
-A Sudoku game with a retro computer aesthetic built using Qt/QML.
+A Sudoku game with a computer aesthetic built using Qt/QML.
 
 ![Retro Sudoku](https://github.com/A-Little-Mouse/Sudoku/blob/main/screenshots/main-screen.png)
 
@@ -11,7 +11,7 @@ A Sudoku game with a retro computer aesthetic built using Qt/QML.
 - **Puzzle Solver**: Built-in solver for when you're stuck
 - **Game History**: Track your completed puzzles and times
 - **Customizable Settings**: Adjust sound, display, and accessibility options
-- **Immersive Sound Effects**: Background music and interactive sound effects
+- **Immersive Sound Effects**: Background music and interactive sound effects <Not ATP>
 
 ## Screenshots
 
