@@ -15,6 +15,9 @@ Item {
     width: parent.width
     height: parent.height
 
+    property int textIndex : 0
+    property var selectionText : ["SELECT","ERASER"]
+
     // Currently selected number for input (0 means delete)
     property int selectedNumber: 0
     
@@ -44,14 +47,26 @@ Item {
         updateButtonVisibility();
     }
 
+    onGridEmptyChanged: {
+        if(gridEmpty)
+        {
+            textIndex=0;
+        }
+    }
+
     // Handle keyboard input
     Keys.onPressed: function(event) {
         if (event.key >= Qt.Key_1 && event.key <= Qt.Key_9) {
             selectedNumber = event.key - Qt.Key_0;
+            textIndex = 1;
             event.accepted = true;
-        } else if (event.key === Qt.Key_Delete || event.key === Qt.Key_Backspace) {
-            selectedNumber = 0;
-            event.accepted = true;
+
+        } else if (event.key === Qt.Key_Delete || event.key === Qt.Key_Backspace || event.key === Qt.Key_0) {
+            if(!gridEmpty)
+            {
+                selectedNumber = 0;
+                event.accepted = true;
+            }
         }
     }
 
@@ -101,7 +116,7 @@ Item {
 
         Text {
             id: numberText
-            text: solverScreen.selectedNumber === 0 ? "SELECT" : solverScreen.selectedNumber
+            text: solverScreen.selectedNumber === 0 ? selectionText[textIndex] : solverScreen.selectedNumber
             color: solverScreen.selectedNumber === 0 ? mainWindow.textMainColour : "#455663"
             font {
                 pixelSize: solverScreen.selectedNumber === 0 ? 36 : 80
@@ -275,6 +290,7 @@ Item {
             onReleased: resetButton.color = "transparent"
             onClicked: {
                 resetGrid();
+                textIndex = 0;
             }
         }
     }

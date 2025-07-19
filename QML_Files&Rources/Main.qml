@@ -21,8 +21,8 @@ ApplicationWindow {
     color: "#bb3f17"
 
     // Image properties
-    property alias monitorImage: monitorImage
-    property alias overlayRectangle: overlayRectangle
+    //property alias monitorImage: monitorImage
+    //property alias overlayRectangle: overlayRectangle
 
     // Settings properties
     property bool backgroundSoundOn: false
@@ -54,101 +54,16 @@ ApplicationWindow {
     MediaPlayer {
         id: playerMusic
         source: "qrc:/AudioResources/Music/GlassBeans-MahalEP.mp3"
-        audioOutput: AudioOutput {}
+        audioOutput: AudioOutput {
+            id: musicAudioOutput
+            volume: 0.5 // Initial volume at 50%\
+            onVolumeChanged: {
+
+            }
+        }
         loops: MediaPlayer.Infinite
     }
 
-    // Cursor area overlay
-    Rectangle {
-        id: overlayRectangle
-        width: parent.width * 0.48
-        height: parent.height * 0.57
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            bottom: parent.bottom
-            bottomMargin: parent.height * 0.251
-        }
-        color: "transparent"
-        z: 1000
-
-        // Title container
-        Rectangle {
-            anchors.centerIn: parent
-            visible: true
-            width: sudokuTitleText.width
-            height: childrenRect.height
-            clip: true
-            color: "transparent"
-
-            // Animated title
-            Rectangle {
-                id: sudokuTitle
-                visible: true
-                anchors.left: parent.left
-                width: 0
-                height: childrenRect.height
-                clip: true
-                color: "transparent"
-
-                Text {
-                    id: sudokuTitleText
-                    text: "SUDOKU"
-                    color: mainWindow.textMainColour
-                    font { pixelSize: 80; bold: true }
-                    anchors.left: parent.left
-                }
-
-                // Title animation
-                SequentialAnimation on width {
-                    id: sudokuTitleAnimation
-                    running: false
-                    loops: 1
-                    NumberAnimation {
-                        to: sudokuTitleText.width
-                        duration: 1500
-                        easing.type: Easing.linear
-                    }
-                    onStopped: {
-                        menuColumn.visible = true
-                        sudokuTitle.visible = false
-                        showCursor = true
-                    }
-                }
-            }
-        }
-
-        // Custom cursor image
-        Image {
-            id: customCursorImage
-            source: "qrc:/ImgResources/Cursor/customCursor.png"
-            visible: showCursor
-            z: 100
-            height: 28
-            fillMode: Image.PreserveAspectFit
-
-            // Cache the image for better performance
-            cache: true
-            asynchronous: true
-        }
-
-        // Mouse area for custom cursor
-        MouseArea {
-            anchors.fill: parent
-            anchors.margins: 20
-            hoverEnabled: true
-            acceptedButtons: Qt.NoButton
-            propagateComposedEvents: true
-            cursorShape: mainWindow.powerOn ? Qt.BlankCursor : Qt.ArrowCursor
-
-            onEntered: if(mainWindow.powerOn) customCursorImage.visible = true
-            onExited: customCursorImage.visible = false
-
-            onPositionChanged: {
-                customCursorImage.x = mouse.x + 20
-                customCursorImage.y = mouse.y + 20
-            }
-        }
-    }
     //Disk control (music toggle)
     Image {
         id: diskImage
@@ -200,6 +115,287 @@ ApplicationWindow {
         // Cache the image for better performance
         cache: true
         asynchronous: true
+
+        // Cursor area overlay
+        Rectangle {
+            id: overlayRectangle
+            width: parent.width * 0.77
+            height: parent.height * 0.67
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+                bottom: parent.bottom
+                //bottomMargin: -(mainWindow.height-parent.height)/2+mainWindow.height * 0.254
+                bottomMargin: parent.height*0.2105
+            }
+            color: "transparent"
+            border.width: 3
+
+            // Title container
+            Rectangle {
+                anchors.centerIn: parent
+                visible: true
+                width: sudokuTitleText.width
+                height: childrenRect.height
+                clip: true
+                color: "transparent"
+
+                // Animated title
+                Rectangle {
+                    id: sudokuTitle
+                    visible: true
+                    anchors.left: parent.left
+                    width: 0
+                    height: childrenRect.height
+                    clip: true
+                    color: "transparent"
+
+                    Text {
+                        id: sudokuTitleText
+                        text: "SUDOKU"
+                        color: mainWindow.textMainColour
+                        font { pixelSize: 80; bold: true }
+                        anchors.left: parent.left
+                    }
+
+                    // Title animation
+                    SequentialAnimation on width {
+                        id: sudokuTitleAnimation
+                        running: false
+                        loops: 1
+                        NumberAnimation {
+                            to: sudokuTitleText.width
+                            duration: 1500
+                            easing.type: Easing.Linear
+                        }
+                        onStopped: {
+                            menuColumn.visible = true
+                            sudokuTitle.visible = false
+                            showCursor = true
+                        }
+                    }
+                }
+            }
+
+            // Main menu stack
+            StackView {
+                id: stackView
+                anchors.fill: parent
+                initialItem: Item {
+                    id: mainMenuItem
+                    width: parent.width
+                    height: parent.height
+
+                    // Main menu column
+                    Column {
+                        id: menuColumn
+                        visible: false // Initially hidden
+
+                        // Menu animation
+                        SequentialAnimation on scale {
+                            id: menuColumnAnim
+                            running: false
+                            loops: 1
+                            NumberAnimation { property: "scale"; duration: 500; from: 0.85; to: 1.0 }
+                        }
+
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        anchors.rightMargin: parent.width * 0.15
+                        spacing: 30
+
+                        // Play option
+                        Text {
+                            id: playOption
+                            text: "PLAY"
+                            color: mainWindow.textMainColour
+                            font.pixelSize: 32
+                            anchors.right: parent.right
+
+                            // Hover animation
+                            SequentialAnimation on scale {
+                                id: playAnim
+                                running: false
+                                loops: 1
+                                NumberAnimation { to: 1.1; duration: 100 }
+                                NumberAnimation { to: 1.0; duration: 100 }
+                            }
+
+                            MouseArea {
+                                hoverEnabled: true
+                                cursorShape: Qt.BlankCursor
+                                anchors.fill: parent
+                                onEntered: playAnim.start()
+                                onClicked: {
+                                    stackView.push("PlayScreen.qml")
+                                }
+                            }
+                        }
+               // Solver option
+                        Text {
+                            id: solveOption
+                            text: "SOLVER"
+                            color: mainWindow.textMainColour
+                            font.pixelSize: 32
+                            anchors.right: parent.right
+
+                            // Hover animation
+                            SequentialAnimation on scale {
+                                id: solveAnim
+                                running: false
+                                loops: 1
+                                NumberAnimation { to: 1.1; duration: 100 }
+                                NumberAnimation { to: 1.0; duration: 100 }
+                            }
+
+                            MouseArea {
+                                hoverEnabled: true
+                                cursorShape: Qt.BlankCursor
+                                anchors.fill: parent
+                                onEntered: solveAnim.start()
+                                onClicked: {
+                                    stackView.push("Solver.qml")
+                                }
+                            }
+                        }
+
+                        // History option
+                        Text {
+                            id: historyOption
+                            text: "HISTORY"
+                            color: mainWindow.textMainColour
+                            font.pixelSize: 32
+                            anchors.right: parent.right
+
+                            // Hover animation
+                            SequentialAnimation on scale {
+                                id: historyAnim
+                                running: false
+                                loops: 1
+                                NumberAnimation { to: 1.1; duration: 100 }
+                                NumberAnimation { to: 1.0; duration: 100 }
+                            }
+
+                            MouseArea {
+                                hoverEnabled: true
+                                cursorShape: Qt.BlankCursor
+                                anchors.fill: parent
+                                onEntered: historyAnim.start()
+                                onClicked: {
+                                    stackView.push("HistoryScreen.qml")
+                                }
+                            }
+                        }
+                     // Settings option
+                        Text {
+                            id: settingOption
+                            text: "SETTING"
+                            color: mainWindow.textMainColour
+                            font.pixelSize: 32
+                            anchors.right: parent.right
+
+                            // Hover animation
+                            SequentialAnimation on scale {
+                                id: settingAnim
+                                running: false
+                                loops: 1
+                                NumberAnimation { to: 1.1; duration: 100 }
+                                NumberAnimation { to: 1.0; duration: 100 }
+                            }
+
+                            MouseArea {
+                                hoverEnabled: true
+                                cursorShape: Qt.BlankCursor
+                                anchors.fill: parent
+                                onEntered: settingAnim.start()
+                                onClicked: {
+                                    stackView.push("SettingsScreen.qml")
+                                }
+                            }
+                        }
+
+                        // Exit option
+                        Text {
+                            id: exitOption
+                            text: "EXIT"
+                            color: mainWindow.textMainColour
+                            font.pixelSize: 32
+                            anchors.right: parent.right
+
+                            // Hover animation
+                            SequentialAnimation on scale {
+                                id: exitAnim
+                                running: false
+                                loops: 1
+                                NumberAnimation { to: 1.1; duration: 100 }
+                                NumberAnimation { to: 1.0; duration: 100 }
+                            }
+
+                            MouseArea {
+                                hoverEnabled: true
+                                cursorShape: Qt.BlankCursor
+                                anchors.fill: parent
+                                onEntered: exitAnim.start()
+                                onClicked: {
+                                    exitDialog.open()
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //Stack view transitions
+                pushEnter: Transition {
+                    NumberAnimation { property: "scale"; duration: 90; from: 0.85; to: 1.0 }
+                }
+                pushExit: Transition {
+                    NumberAnimation { property: "scale"; duration: 90; from: 1.0; to: 0.85 }
+                }
+                popEnter: Transition {
+                    NumberAnimation { property: "scale"; duration: 90; from: 0.85; to: 1.0 }
+                }
+                popExit: Transition {
+                    NumberAnimation { property: "scale"; duration: 90; from: 1.0; to: 0.85 }
+                }
+            }
+
+            ExitDialog {
+                id: exitDialog
+            }
+
+            // Custom cursor image
+            Image {
+                id: customCursorImage
+                source: "qrc:/ImgResources/Cursor/customCursor.png"
+                visible: showCursor
+                z: 100
+                height: 28
+                fillMode: Image.PreserveAspectFit
+
+                // Cache the image for better performance
+                cache: true
+                asynchronous: true
+            }
+
+            // Mouse area for custom cursor
+            MouseArea {
+                anchors.fill: parent
+                anchors.margins: 20
+                hoverEnabled: true
+                acceptedButtons: Qt.NoButton
+                propagateComposedEvents: true
+                cursorShape: mainWindow.powerOn ? Qt.BlankCursor : Qt.ArrowCursor
+
+                onEntered: if(mainWindow.powerOn) customCursorImage.visible = true
+                onExited: customCursorImage.visible = false
+
+                //ADDED function(mouse)
+                onPositionChanged: function(mouse) {
+                    customCursorImage.x = mouse.x + 20
+                    customCursorImage.y = mouse.y + 20
+                }
+            }
+
+        }
 
         // Power button
         Image {
@@ -265,7 +461,6 @@ ApplicationWindow {
                         backgroundSoundOn = true
                         sudokuTitleAnimation.start()
                     } else if(menuColumn.visible) {
-                        menuColumn.visible = false
                         exitDialog.open()
                     }
                 }
@@ -371,191 +566,8 @@ ApplicationWindow {
             }
         }
     }
-    // Main menu stack
-    StackView {
-        id: stackView
-        anchors.fill: overlayRectangle
-        initialItem: Item {
-            id: mainMenuItem
-            width: overlayRectangle.width
-            height: overlayRectangle.height
 
-            // Main menu column
-            Column {
-                id: menuColumn
-                visible: false // Initially hidden
 
-                // Menu animation
-                SequentialAnimation on scale {
-                    id: menuColumnAnim
-                    running: false
-                    loops: 1
-                    NumberAnimation { property: "scale"; duration: 500; from: 0.85; to: 1.0 }
-                }
-
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                anchors.rightMargin: parent.width * 0.15
-                spacing: 30
-
-                // Play option
-                Text {
-                    id: playOption
-                    text: "PLAY"
-                    color: mainWindow.textMainColour
-                    font.pixelSize: 32
-                    anchors.right: parent.right
-
-                    // Hover animation
-                    SequentialAnimation on scale {
-                        id: playAnim
-                        running: false
-                        loops: 1
-                        NumberAnimation { to: 1.1; duration: 100 }
-                        NumberAnimation { to: 1.0; duration: 100 }
-                    }
-
-                    MouseArea {
-                        hoverEnabled: true
-                        cursorShape: Qt.BlankCursor
-                        anchors.fill: parent
-                        onEntered: playAnim.start()
-                        onClicked: {
-                            stackView.push("PlayScreen.qml")
-                        }
-                    }
-                }
-       // Solver option
-                Text {
-                    id: solveOption
-                    text: "SOLVER"
-                    color: mainWindow.textMainColour
-                    font.pixelSize: 32
-                    anchors.right: parent.right
-
-                    // Hover animation
-                    SequentialAnimation on scale {
-                        id: solveAnim
-                        running: false
-                        loops: 1
-                        NumberAnimation { to: 1.1; duration: 100 }
-                        NumberAnimation { to: 1.0; duration: 100 }
-                    }
-
-                    MouseArea {
-                        hoverEnabled: true
-                        cursorShape: Qt.BlankCursor
-                        anchors.fill: parent
-                        onEntered: solveAnim.start()
-                        onClicked: {
-                            stackView.push("Solver.qml")
-                        }
-                    }
-                }
-
-                // History option
-                Text {
-                    id: historyOption
-                    text: "HISTORY"
-                    color: mainWindow.textMainColour
-                    font.pixelSize: 32
-                    anchors.right: parent.right
-
-                    // Hover animation
-                    SequentialAnimation on scale {
-                        id: historyAnim
-                        running: false
-                        loops: 1
-                        NumberAnimation { to: 1.1; duration: 100 }
-                        NumberAnimation { to: 1.0; duration: 100 }
-                    }
-
-                    MouseArea {
-                        hoverEnabled: true
-                        cursorShape: Qt.BlankCursor
-                        anchors.fill: parent
-                        onEntered: historyAnim.start()
-                        onClicked: {
-                            stackView.push("HistoryScreen.qml")
-                        }
-                    }
-                }
-             // Settings option
-                Text {
-                    id: settingOption
-                    text: "SETTING"
-                    color: mainWindow.textMainColour
-                    font.pixelSize: 32
-                    anchors.right: parent.right
-
-                    // Hover animation
-                    SequentialAnimation on scale {
-                        id: settingAnim
-                        running: false
-                        loops: 1
-                        NumberAnimation { to: 1.1; duration: 100 }
-                        NumberAnimation { to: 1.0; duration: 100 }
-                    }
-
-                    MouseArea {
-                        hoverEnabled: true
-                        cursorShape: Qt.BlankCursor
-                        anchors.fill: parent
-                        onEntered: settingAnim.start()
-                        onClicked: {
-                            stackView.push("SettingsScreen.qml")
-                        }
-                    }
-                }
-
-                // Exit option
-                Text {
-                    id: exitOption
-                    text: "EXIT"
-                    color: mainWindow.textMainColour
-                    font.pixelSize: 32
-                    anchors.right: parent.right
-
-                    // Hover animation
-                    SequentialAnimation on scale {
-                        id: exitAnim
-                        running: false
-                        loops: 1
-                        NumberAnimation { to: 1.1; duration: 100 }
-                        NumberAnimation { to: 1.0; duration: 100 }
-                    }
-
-                    MouseArea {
-                        hoverEnabled: true
-                        cursorShape: Qt.BlankCursor
-                        anchors.fill: parent
-                        onEntered: exitAnim.start()
-                        onClicked: {
-                            exitDialog.open()
-                        }
-                    }
-                }
-            }
-        }
-        //Stack view transitions
-        pushEnter: Transition {
-            NumberAnimation { property: "scale"; duration: 90; from: 0.85; to: 1.0 }
-        }
-        pushExit: Transition {
-            NumberAnimation { property: "scale"; duration: 90; from: 1.0; to: 0.85 }
-        }
-        popEnter: Transition {
-            NumberAnimation { property: "scale"; duration: 90; from: 0.85; to: 1.0 }
-        }
-        popExit: Transition {
-            NumberAnimation { property: "scale"; duration: 90; from: 1.0; to: 0.85 }
-        }
-    }
-
-    // Exit confirmation dialog
-    ExitDialog {
-        id: exitDialog
-    }
 
     // Sound effects
     SoundEffect {

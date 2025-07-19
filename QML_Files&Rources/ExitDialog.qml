@@ -15,10 +15,10 @@ Rectangle {
     id: exitDialog
     width: 400
     height: 200
-    color: "transparent"
-    radius: 10
-    border.color: mainWindow.borderMainColour
-    border.width: 2
+    color: "transparent"//-------------------------
+    radius: 10//-----------------------------------
+    border.color: mainWindow.borderMainColour//----
+    border.width: 2//------------------------------
     anchors.centerIn: overlayRectangle
     visible: false
     clip: true
@@ -26,6 +26,10 @@ Rectangle {
 
     // Allow customization of the dialog title
     property alias dialogTitle: dialogTitle.text
+
+    /*PopUpBackgroundImg{
+        id:popupBackgroundImg
+    }*///------------------------------------------To be used after fixing CustomMouseCursor
 
     // Background image (optimized to use the existing monitor image)
     Image {
@@ -36,9 +40,8 @@ Rectangle {
 
         // Adjust vertical position with an offset
         anchors {
-            horizontalCenter: parent.horizontalCenter
-            verticalCenter: parent.verticalCenter
-            verticalCenterOffset: +parent.height * 0.2 // Adjust this value as needed
+            centerIn: parent
+            verticalCenterOffset: +parent.height*0.2
         }
 
         z: -1 // Ensure it's behind the dialog content
