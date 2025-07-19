@@ -85,4 +85,4 @@ Review your completed puzzles, including:
 
 ---
 
-Made with by BALM.
+Made by BALM.
