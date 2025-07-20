@@ -442,6 +442,23 @@ Item {
         anchors.centerIn: parent
         visible: false
         z: 100
+        clip: true
+
+        Image {
+            id: popupResetConfirmationBackground
+            source: "qrc:/ImgResources/Screen/Monitor.png"
+            height: monitorImage.height
+            fillMode: Image.PreserveAspectFit
+
+            // Adjust vertical position with an offset
+            anchors {
+                centerIn: parent
+                verticalCenterOffset: +parent.height*0.2
+            }
+
+            z: -1 // Ensure it's behind the dialog content
+            // This image could be cached or optimized further
+        }
 
         Column {
             anchors.fill: parent
@@ -542,6 +559,24 @@ Item {
         property bool showCloseButton: true
         property string popupTitle: ""
         property string popupText: ""
+
+        clip: true
+
+        Image {
+            id: popupFinishBackground
+            source: "qrc:/ImgResources/Screen/Monitor.png"
+            height: monitorImage.height
+            fillMode: Image.PreserveAspectFit
+
+            // Adjust vertical position with an offset
+            anchors {
+                centerIn: parent
+                verticalCenterOffset: +parent.height*0.2
+            }
+
+            z: -1 // Ensure it's behind the dialog content
+            // This image could be cached or optimized further
+        }
 
         Column {
             anchors.fill: parent
